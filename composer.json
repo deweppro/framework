@@ -1,0 +1,25 @@
+{
+    "name": "deweppro/framework",
+    "description": "RESTFul API framework",
+    "keywords": ["framework","micro","api","router"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mikhail Knyazhev",
+            "email": "markus621@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Dewep\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.0.0",
+        "psr/http-message": "^1.0",
+        "psr/log": "^1.0",
+        "nikic/fast-route": "^1.2",
+        "symfony/yaml": "^3.3"
+    }
+}
