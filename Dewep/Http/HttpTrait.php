@@ -1,12 +1,12 @@
 <?php
 
-namespace Dewep\Http\Traits;
+namespace Dewep\Http;
 
 /**
  *
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
-trait Http
+trait HttpTrait
 {
 
     /**

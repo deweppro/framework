@@ -93,11 +93,7 @@ class Error
 
         $message = "{$no}: {$str} in {$file}:{$line}";
 
-        Logger::jot($message, $trace);
-//
-//        (new \Dewep\Http\Responce())
-//                ->setError($errstr, $file . ':' . $errline, $errno)
-//                ->getResponce(500);
+        //Logger::jot($message, $trace);
     }
 
 }

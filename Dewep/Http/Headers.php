@@ -5,59 +5,46 @@ namespace Dewep\Http;
 use Dewep\Interfaces\ActionIntrface;
 
 /**
- * Description of Headers
+ * Данные получаемые из заголовков запроса
  *
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
 class Headers implements ActionIntrface
 {
 
-    use \Dewep\http\Traits\Http;
+    use HttpTrait;
 
-    /**
-     * REQEST
-     */
-    // with HTTP_
-    const ACCEPT_LANGUAGE = 'ACCEPT_LANGUAGE';
-    const ACCEPT_ENCODING = 'ACCEPT_ENCODING';
-    const REFERER = 'REFERER';
-    const USER_AGENT = 'USER_AGENT';
-    const CONNECTION = 'CONNECTION';
-    const HOST = 'HOST';
-    // without HTTP_
-    const REQUEST_SCHEME = 'REQUEST_SCHEME';
-    const SERVER_PROTOCOL = 'SERVER_PROTOCOL';
-    const DOCUMENT_ROOT = 'DOCUMENT_ROOT';
-    const DOCUMENT_URI = 'DOCUMENT_URI';
-    const REQUEST_URI = 'REQUEST_URI';
-    const SCRIPT_NAME = 'SCRIPT_NAME';
-    const CONTENT_LENGTH = 'CONTENT_LENGTH';
-    const CONTENT_TYPE = 'CONTENT_TYPE';
-    const REQUEST_METHOD = 'REQUEST_METHOD';
-    const QUERY_STRING = 'QUERY_STRING';
-    const REQUEST_TIME = 'REQUEST_TIME';
-
-    /**
-     *
-     */
     protected $headers;
     protected $serverParams;
     protected $cookies;
 
     /**
+     * Загрузчик класса
      *
+     * @return Headers
      */
-    public function __construct()
+    public static function bootstrap(): Headers
     {
-        $headers = array_filter($_SERVER,
+        return new static($_SERVER, $_COOKIE);
+    }
+
+    /**
+     * Конструктов с возможностью использования своего массива заголовков
+     *
+     * @param array $server
+     * @param array $cookie
+     */
+    public function __construct(array $server, array $cookie)
+    {
+        $headers = array_filter($server,
                 function($k) {
             return substr($k, 0, 5) == 'HTTP_';
         }, ARRAY_FILTER_USE_KEY);
 
-        $serverParams = array_diff_key($_SERVER, $headers);
+        $serverParams = array_diff_key($server, $headers);
 
         $this->serverParams = array_map([$this, 'originalKey'], $serverParams);
-        $this->cookies = array_map([$this, 'originalKey'], $_COOKIE);
+        $this->cookies = array_map([$this, 'originalKey'], $cookie);
 
         foreach ($headers as $key => $value) {
             $this->set($key, $value);
@@ -65,8 +52,9 @@ class Headers implements ActionIntrface
     }
 
     /**
+     * Получение списка всех заголовков
      *
-     * @return type
+     * @return array
      */
     public function all()
     {
@@ -79,20 +67,20 @@ class Headers implements ActionIntrface
 
     /**
      *
-     * @param type $key
-     * @param type $value
+     * @param string $key
+     * @param string $value
      */
-    public function set($key, $value)
+    public function set(string $key, string $value)
     {
-        $this->headers[$this->normalizeKey($key)] = $value;
+        $this->headers[$this->normalizeKey($key)] = [$value];
     }
 
     /**
      *
-     * @param type $key
-     * @return type
+     * @param string $key
+     * @return bool
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         $key = $this->normalizeKey($key);
         return isset($this->headers[$key]);
@@ -104,7 +92,7 @@ class Headers implements ActionIntrface
      * @param type $default
      * @return type
      */
-    public function get($key, $default = null)
+    public function get(string $key, array $default = []): array
     {
         $key = $this->normalizeKey($key);
         return $this->headers[$key] ?? $default;
@@ -115,13 +103,10 @@ class Headers implements ActionIntrface
      * @param type $key
      * @param type $value
      */
-    public function add($key, $value)
+    public function add(string $key, array $value = [])
     {
         $key = $this->normalizeKey($key);
         $valueExist = $this->get($key, []);
-
-        $valueExist = !is_array($valueExist) ? [$valueExist] : $valueExist;
-        $value = !is_array($value) ? [$value] : $value;
 
         $this->set($key, array_merge($valueExist, $value));
     }
@@ -130,7 +115,7 @@ class Headers implements ActionIntrface
      *
      * @param type $key
      */
-    public function remove($key)
+    public function remove(string $key)
     {
         $key = $this->normalizeKey($key);
         unset($this->headers[$key]);
@@ -140,22 +125,32 @@ class Headers implements ActionIntrface
      *
      */
 
-    private function contentType()
+    /**
+     *
+     * @return array
+     */
+    private function contentType(): array
     {
-        $contentType = $this->headers['content-type'][0] ??
-                $this->headers['content-type'] ??
-                '';
+        $contentType = $this->headers['content-type'][0] ?? '';
         $contentTypeArray = explode(';', strtolower($contentType), 2);
         $contentTypeArray = array_map('trim', $contentTypeArray);
         return $contentTypeArray;
     }
 
-    public function getContentType()
+    /**
+     *
+     * @return string
+     */
+    public function getContentType(): string
     {
         return $this->contentType()[0] ?? '';
     }
 
-    public function getContentTypeParams()
+    /**
+     *
+     * @return array
+     */
+    public function getContentTypeParams(): array
     {
         $params = $this->contentType()[1] ?? '';
         return explode('=', $params, 2);
@@ -165,12 +160,22 @@ class Headers implements ActionIntrface
      *
      */
 
-    public function getServerParams()
+    /**
+     *
+     * @return array
+     */
+    public function getServerParams(): array
     {
         return $this->serverParams;
     }
 
-    public function getServerParam(string $key, $default = null)
+    /**
+     *
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
+    public function getServerParam(string $key, string $default = null): string
     {
         $key = $this->originalKey($key);
         return $this->serverParams[$key] ?? $default;
@@ -180,20 +185,39 @@ class Headers implements ActionIntrface
      *
      */
 
-    public function getCookies()
+    /**
+     *
+     * @return array
+     */
+    public function getCookies(): array
     {
         return $this->cookies;
     }
 
-    public function setCookies($key, $value, $expire = 3600, $path = '/',
-            $domain = '*', $secure = false, $httponly = false)
+    /**
+     *
+     * @param string $key
+     * @param string $value
+     * @param int $expire
+     * @param string $path
+     * @param string $domain
+     * @param bool $secure
+     * @param bool $httponly
+     */
+    public function setCookies(string $key, string $value, int $expire = 3600,
+            string $path = '/', string $domain = '*', bool $secure = false,
+            bool $httponly = false)
     {
         $key = $this->originalKey($key);
         $this->cookies[$key] = $value;
         setcookie($key, $value, $expire, $path, $domain, $secure, $httponly);
     }
 
-    public function removeCookies($key)
+    /**
+     *
+     * @param string $key
+     */
+    public function removeCookies(string $key)
     {
         $key = $this->originalKey($key);
         unset($this->cookies[$key]);

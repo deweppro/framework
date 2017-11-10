@@ -2,7 +2,7 @@
 
 namespace Dewep\Http;
 
-use Dewep\Http\Headers;
+use Dewep\Http\HeaderType;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use Dewep\Exception\HttpExeption;
@@ -15,24 +15,40 @@ use Dewep\Exception\HttpExeption;
 class Route
 {
 
-    use \Dewep\Http\Traits\Http;
+    use HttpTrait;
 
     protected $routes;
     protected $headers;
     protected $result;
 
+    /**
+     *
+     * @param array $routes
+     * @param \Dewep\Http\Headers $headers
+     */
     public function __construct(array $routes, Headers $headers)
     {
-        $this->routes = $routes['routes'] ?? $routes ?? [];
+        $this->routes = $routes ?? [];
         $this->headers = $headers;
     }
 
+    /**
+     *
+     * @param string $path
+     * @param string $methods
+     * @param string $class
+     */
     public function set(string $path, string $methods, string $class)
     {
         $this->routes[$path][$methods] = $class;
     }
 
-    public function bind()
+    /**
+     *
+     * @return $this
+     * @throws HttpExeption
+     */
+    public function bind(): Route
     {
         $routes = $this->routes;
         $dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $r) use ($routes) {
@@ -44,9 +60,9 @@ class Route
             }
         });
 
-        $httpMethod = $this->headers->getServerParam(Headers::REQUEST_METHOD,
+        $httpMethod = $this->headers->getServerParam(HeaderType::REQUEST_METHOD,
                 'GET');
-        $uri = $this->headers->getServerParam(Headers::REQUEST_URI, '/');
+        $uri = $this->headers->getServerParam(HeaderType::REQUEST_URI, '/');
 
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
         switch ($routeInfo[0]) {
@@ -68,27 +84,50 @@ class Route
         return $this;
     }
 
-    public function getAttribute($name, $default = null)
+    /**
+     *
+     * @param type $name
+     * @param type $default
+     * @return array
+     */
+    public function getAttribute(string $name, $default = null): array
     {
         $name = $this->normalizeKey($name);
         return $this->result[2][$name] ?? $default;
     }
 
-    public function setAttribute($name, $value)
+    /**
+     *
+     * @param string $name
+     * @param type $value
+     */
+    public function setAttribute(string $name, $value)
     {
         $this->result[2][$this->normalizeKey($name)] = $value;
     }
 
-    public function removeAttribute($name, $value)
+    /**
+     *
+     * @param string $name
+     */
+    public function removeAttribute(string $name)
     {
         unset($this->result[2][$this->normalizeKey($name)]);
     }
 
-    public function getAttributes()
+    /**
+     *
+     * @return array
+     */
+    public function getAttributes(): array
     {
         return $this->result[2] ?? [];
     }
 
+    /**
+     *
+     * @return type
+     */
     public function getHandler()
     {
         return $this->result[1] ?? function () {

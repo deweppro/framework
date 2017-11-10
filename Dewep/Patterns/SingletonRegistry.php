@@ -37,7 +37,11 @@ abstract class SingletonRegistry
     static private $_instance = null;
     private $_registry = array();
 
-    final public static function getInstance()
+    /**
+     *
+     * @return type
+     */
+    final private static function getInstance()
     {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
@@ -46,27 +50,50 @@ abstract class SingletonRegistry
         return self::$_instance;
     }
 
+    /**
+     *
+     * @param type $key
+     * @param type $object
+     */
     final public static function set($key, $object)
     {
         self::getInstance()->_registry[$key] = $object;
     }
 
+    /**
+     *
+     * @param type $key
+     * @return type
+     */
     final public static function get($key)
     {
         return self::getInstance()->_registry[$key] ?? null;
     }
 
-    private function __wakeup()
+    /**
+     *
+     * @param type $key
+     */
+    final public static function remove($key)
+    {
+        unset(self::getInstance()->_registry[$key]);
+    }
+
+    /*
+     *
+     */
+
+    final private function __construct()
     {
 
     }
 
-    private function __construct()
+    final private function __wakeup()
     {
 
     }
 
-    private function __clone()
+    final private function __clone()
     {
 
     }

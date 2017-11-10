@@ -24,14 +24,34 @@
  * THE SOFTWARE.
  */
 
-namespace Dewep\Exception;
+namespace Dewep\Http;
 
 /**
- * Description of ArgumentExeption
+ * Description of HeaderType
  *
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
-class ArgumentExeption extends \Exception
+class HeaderType
 {
-    //put your code here
+
+    // with HTTP_
+    const ACCEPT_LANGUAGE = 'ACCEPT_LANGUAGE';
+    const ACCEPT_ENCODING = 'ACCEPT_ENCODING';
+    const REFERER = 'REFERER';
+    const USER_AGENT = 'USER_AGENT';
+    const CONNECTION = 'CONNECTION';
+    const HOST = 'HOST';
+    // without HTTP_
+    const REQUEST_SCHEME = 'REQUEST_SCHEME';
+    const SERVER_PROTOCOL = 'SERVER_PROTOCOL';
+    const DOCUMENT_ROOT = 'DOCUMENT_ROOT';
+    const DOCUMENT_URI = 'DOCUMENT_URI';
+    const REQUEST_URI = 'REQUEST_URI';
+    const SCRIPT_NAME = 'SCRIPT_NAME';
+    const CONTENT_LENGTH = 'CONTENT_LENGTH';
+    const CONTENT_TYPE = 'CONTENT_TYPE';
+    const REQUEST_METHOD = 'REQUEST_METHOD';
+    const QUERY_STRING = 'QUERY_STRING';
+    const REQUEST_TIME = 'REQUEST_TIME';
+
 }

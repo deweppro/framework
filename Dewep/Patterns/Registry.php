@@ -36,7 +36,7 @@ use Dewep\Exception\RuntimeException;
 abstract class Registry
 {
 
-    protected static $__registry = array();
+    protected static $__registry = [];
 
     /**
      *
@@ -52,11 +52,12 @@ abstract class Registry
     /**
      *
      * @param string $key
+     * @param type $default
      * @return type
      */
-    final public static function get(string $key)
+    final public static function get(string $key, $default = null)
     {
-        return self::$__registry[$key] ?? null;
+        return self::$__registry[$key] ?? $default;
     }
 
     /**
@@ -66,6 +67,33 @@ abstract class Registry
     final public static function remove(string $key)
     {
         unset(self::$__registry[$key]);
+    }
+
+    /**
+     *
+     */
+    final public static function reset()
+    {
+        unset(self::$__registry[$key]);
+    }
+
+    /*
+     *
+     */
+
+    final private function __construct()
+    {
+
+    }
+
+    final private function __wakeup()
+    {
+
+    }
+
+    final private function __clone()
+    {
+
     }
 
 }

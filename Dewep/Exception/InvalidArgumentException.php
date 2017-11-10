@@ -5,7 +5,7 @@ namespace Dewep\Exception;
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
-class RuntimeException extends \Exception
+class InvalidArgumentException extends \Exception
 {
     //put your code here
 }

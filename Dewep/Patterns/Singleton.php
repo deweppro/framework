@@ -49,12 +49,16 @@ abstract class Singleton
         return self::$__instance;
     }
 
-    final private function __wakeup()
+    /*
+     *
+     */
+
+    final private function __construct()
     {
 
     }
 
-    final private function __construct()
+    final private function __wakeup()
     {
 
     }
