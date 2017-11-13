@@ -57,7 +57,19 @@ abstract class Registry
      */
     final public static function get(string $key, $default = null)
     {
-        return self::$__registry[$key] ?? $default;
+        return self::$__registry[$key] ?? $default ?? function() use ($key) {
+            throw new RuntimeException("Registry key - {$key} - not found");
+        };
+    }
+
+    /**
+     *
+     * @param string $key
+     * @return type
+     */
+    final public static function has(string $key)
+    {
+        return isset(self::$__registry[$key]);
     }
 
     /**
