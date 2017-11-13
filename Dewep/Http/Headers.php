@@ -15,8 +15,8 @@ class Headers implements ActionIntrface
     use HttpTrait;
 
     protected $headers;
-    protected $serverParams;
-    protected $cookies;
+    protected $serverParams = [];
+    protected $cookies = [];
 
     /**
      * Загрузчик класса
@@ -32,9 +32,9 @@ class Headers implements ActionIntrface
      * Конструктов с возможностью использования своего массива заголовков
      *
      * @param array $server
-     * @param array $cookie
+     * @param array $cookies
      */
-    public function __construct(array $server, array $cookie)
+    public function __construct(array $server, array $cookies)
     {
         $headers = array_filter($server,
                 function($k) {
@@ -42,9 +42,14 @@ class Headers implements ActionIntrface
         }, ARRAY_FILTER_USE_KEY);
 
         $serverParams = array_diff_key($server, $headers);
+        foreach ($serverParams as $key => $value) {
+            $this->serverParams[$this->originalKey($key)] = $value;
+        }
 
-        $this->serverParams = array_map([$this, 'originalKey'], $serverParams);
-        $this->cookies = array_map([$this, 'originalKey'], $cookie);
+        foreach ($cookies as $key => $value) {
+            $this->cookies[$this->originalKey($key)] = $value;
+        }
+
 
         foreach ($headers as $key => $value) {
             $this->set($key, $value);
@@ -70,9 +75,9 @@ class Headers implements ActionIntrface
      * @param string $key
      * @param string $value
      */
-    public function set(string $key, string $value)
+    public function set(string $key, $value)
     {
-        $this->headers[$this->normalizeKey($key)] = [$value];
+        $this->headers[$this->normalizeKey($key)] = [(string) $value];
     }
 
     /**
@@ -92,7 +97,7 @@ class Headers implements ActionIntrface
      * @param type $default
      * @return type
      */
-    public function get(string $key, array $default = []): array
+    public function get(string $key, $default = []): array
     {
         $key = $this->normalizeKey($key);
         return $this->headers[$key] ?? $default;
@@ -103,7 +108,7 @@ class Headers implements ActionIntrface
      * @param type $key
      * @param type $value
      */
-    public function add(string $key, array $value = [])
+    public function add(string $key, $value = [])
     {
         $key = $this->normalizeKey($key);
         $valueExist = $this->get($key, []);

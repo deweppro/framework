@@ -44,7 +44,7 @@ abstract class Registry
      */
     final public static function set(string $key, $value)
     {
-        static::$__registry[$key] = $value;
+        self::$__registry[self::_class()][$key] = $value;
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class Registry
      */
     final public static function get(string $key, $default = null)
     {
-        return static::$__registry[$key] ?? $default;
+        return self::$__registry[self::_class()][$key] ?? $default;
     }
 
     /**
@@ -65,7 +65,7 @@ abstract class Registry
      */
     final public static function has(string $key)
     {
-        return isset(static::$__registry[$key]);
+        return isset(self::$__registry[self::_class()][$key]);
     }
 
     /**
@@ -74,7 +74,7 @@ abstract class Registry
      */
     final public static function remove(string $key)
     {
-        unset(static::$__registry[$key]);
+        unset(self::$__registry[self::_class()][$key]);
     }
 
     /**
@@ -82,12 +82,26 @@ abstract class Registry
      */
     final public static function reset()
     {
-        unset(static::$__registry[$key]);
+        unset(self::$__registry[self::_class()][$key]);
     }
 
-    /*
+    /**
      *
+     * @return array
      */
+    public static function all(): array
+    {
+        return array_keys(self::$__registry[self::_class()]);
+    }
+
+    /**
+     *
+     * @return string
+     */
+    final protected static function _class(): string
+    {
+        return get_called_class();
+    }
 
     final private function __construct()
     {

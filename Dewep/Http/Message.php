@@ -72,7 +72,7 @@ abstract class Message implements MessageInterface
      * @param string $version HTTP protocol version
      * @return static
      */
-    public function withProtocolVersion(string $version): MessageInterface
+    public function withProtocolVersion($version): MessageInterface
     {
         if (!in_array($version, self::$validProtocolVersions)) {
             throw new RuntimeException('Invalid HTTP version.');
@@ -121,7 +121,7 @@ abstract class Message implements MessageInterface
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader(string $name): bool
+    public function hasHeader($name): bool
     {
         return $this->headers->has($name);
     }
@@ -140,7 +140,7 @@ abstract class Message implements MessageInterface
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader(string $name): array
+    public function getHeader($name): array
     {
         return $this->headers->get($name);
     }
@@ -164,7 +164,7 @@ abstract class Message implements MessageInterface
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine(string $name): string
+    public function getHeaderLine($name): string
     {
         $value = $this->headers->get($name, []);
         return is_array($value) ? implode(', ', $value) : $value;
@@ -185,7 +185,7 @@ abstract class Message implements MessageInterface
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withHeader(string $name, array $value): MessageInterface
+    public function withHeader($name, $value): MessageInterface
     {
         $clone = clone $this;
         $clone->headers->set($name, $value);
@@ -208,7 +208,7 @@ abstract class Message implements MessageInterface
      * @return static
      * @throws \InvalidArgumentException for invalid header names or values.
      */
-    public function withAddedHeader(string $name, array $value): MessageInterface
+    public function withAddedHeader($name, $value): MessageInterface
     {
         $clone = clone $this;
         $clone->headers->add($name, $value);
@@ -227,7 +227,7 @@ abstract class Message implements MessageInterface
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    public function withoutHeader(string $name): MessageInterface
+    public function withoutHeader($name): MessageInterface
     {
         $clone = clone $this;
         $clone->headers->remove($name);

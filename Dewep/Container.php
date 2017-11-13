@@ -38,22 +38,17 @@ class Container extends Registry
 
     /**
      *
-     * @return array
-     */
-    public static function all(): array
-    {
-        return array_keys(self::$__registry);
-    }
-
-    /**
-     *
      * @param string $key
      * @param type $value
      */
     public static function exist(string $key, $value)
     {
-        if (!isset(self::$__registry[$key])) {
-            self::$__registry[$key] = $value;
+        if (!isset(self::$__registry[self::_class()][$key])) {
+            if ($value instanceof \Closure) {
+                self::$__registry[self::_class()][$key] = $value();
+            } else {
+                self::$__registry[self::_class()][$key] = $value;
+            }
         }
     }
 

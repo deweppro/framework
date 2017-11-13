@@ -32,6 +32,7 @@ use Dewep\Handlers\Error;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Dewep\Middleware\Builder as MB;
+use Dewep\Exception\RuntimeException;
 
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
@@ -45,9 +46,14 @@ class Application
      */
     public function __construct(string $configFilePath)
     {
-        echo $configFilePath;
-        die;
         Config::makeSysFolders();
+
+        if (
+                !file_exists($configFilePath) ||
+                !is_readable($configFilePath)
+        ) {
+            throw new RuntimeException('Config file not found!');
+        }
         Config::fromYaml($configFilePath);
 
         Container::exist('logger',
@@ -70,34 +76,42 @@ class Application
      */
     public function bootstrap()
     {
+        ob_start();
+
         $response = Response::bootstrap();
-        Container::exist('response', $response);
+        Container::set('response', $response);
 
         $request = Request::bootstrap();
-        Container::exist('request', $request);
+        Container::set('request', $request);
 
         $middleware = Config::get('middleware', []);
 
-        if (!empty($middleware['request'])) {
-            MB::makes($middleware['request'], $request, $response);
+        MB::makes($middleware['request'] ?? [], $request, $response);
+
+        $content = $this->getApplication($request, $response);
+        $response->setBody($content);
+
+        MB::makes($middleware['response'] ?? [], $request, $response);
+
+        $err = ob_get_contents();
+        ob_end_flush();
+
+        if (!empty($err)) {
+            Container::get('logger')->warning($err);
         }
 
+        echo $response;
+    }
+
+    private function getApplication($request, $response)
+    {
         $attributes = $request->getAttributes();
         $heandler = $request->route->getHandler();
 
         list($class, $method) = explode('::', $heandler, 2);
 
         $object = new $class($request, $response);
-        $content = call_user_func_array([$object, $method], $attributes);
-
-        $response->setBody($content);
-
-        if (!empty($middleware['response'])) {
-            MB::makes($middleware['response'], $request, $response);
-        }
-
-        echo $response;
-        die;
+        return call_user_func_array([$object, $method], $attributes);
     }
 
 }

@@ -130,9 +130,11 @@ class Route
      */
     public function getHandler()
     {
-        return $this->result[1] ?? function () {
+        if (empty($this->result[1])) {
             throw new HttpException('Handler is not found', 500);
-        };
+        }
+
+        return $this->result[1];
     }
 
 }

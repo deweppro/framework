@@ -120,7 +120,7 @@ class Response extends Message implements ResponseInterface
      * @param \Dewep\Http\StreamInterface $body
      */
     public function __construct(int $status = 200, Headers $headers,
-            StreamInterface $body)
+            Stream $body)
     {
         $this->status = $status;
         $this->headers = $headers;
@@ -160,7 +160,7 @@ class Response extends Message implements ResponseInterface
      * @return static
      * @throws \InvalidArgumentException For invalid status code arguments.
      */
-    public function withStatus(int $code, string $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): Response
     {
         if (!isset(static::$messages[$code])) {
             throw new InvalidArgumentException('Transferred to non-standard status code');
@@ -201,7 +201,13 @@ class Response extends Message implements ResponseInterface
         return '';
     }
 
-    public function setBody($body)
+    /**
+     *
+     * @param type $body
+     * @return \Dewep\Http\Response
+     * @throws HttpException
+     */
+    public function setBody($body): Response
     {
         $response = Config::get('response');
 
@@ -223,13 +229,13 @@ class Response extends Message implements ResponseInterface
             $handler = $response['handler'] ?? '\Dewep\Parsers\Response::json';
         }
 
-        $content = call_user_func_array($handler, [$body]);
+        $content = call_user_func($handler, $body);
 
-        $stream = new Stream(fopen('php://temp', 'w+'));
+        $stream = new Stream(fopen('php://temp', 'r+'));
         $stream->write($content);
 
         $clone = $this->withBody($stream);
-        return $clone->withHeader();
+        return $clone->withHeader(HeaderType::CONTENT_TYPE, $head);
     }
 
     /**

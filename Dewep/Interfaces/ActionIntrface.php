@@ -35,13 +35,13 @@ interface ActionIntrface
 
     public function all();
 
-    public function has($key);
+    public function has(string $key);
 
-    public function get($key, $default);
+    public function get(string $key, $default);
 
-    public function set($key, $value);
+    public function set(string $key, $value);
 
-    public function add($key, $value);
+    public function add(string $key, $value);
 
-    public function remove();
+    public function remove(string $key);
 }

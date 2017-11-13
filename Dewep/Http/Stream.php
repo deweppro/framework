@@ -31,10 +31,10 @@ class Stream implements StreamInterface
      *
      * @return StreamInterface
      */
-    public static function bootstrap(): StreamInterface
+    public static function bootstrap($handle = null): Stream
     {
         if (!is_resource($handle)) {
-            $handle = fopen('php://temp', 'w+');
+            $handle = fopen('php://temp', 'r+');
             stream_copy_to_stream(fopen('php://input', 'r'), $handle);
             rewind($handle);
         }
@@ -177,11 +177,11 @@ class Stream implements StreamInterface
      *     SEEK_END: Set position to end-of-stream plus offset.
      * @throws \RuntimeException on failure.
      */
-    public function seek(int $offset, int $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET)
     {
         if (
                 !$this->isSeekable() ||
-                fseek($this->handle, $offset, $whence) === -1
+                fseek($this->handle, (int) $offset, (int) $whence) === -1
         ) {
             throw new RuntimeException('Could not seek in stream');
         }
@@ -218,7 +218,7 @@ class Stream implements StreamInterface
         $writable = array_filter(self::$modes['writable'],
                 function($v) use ($mode) {
             return stripos($mode, $v) !== false;
-        }, ARRAY_FILTER_USE_KEY);
+        }, ARRAY_FILTER_USE_BOTH);
         return !empty($writable);
     }
 
@@ -229,11 +229,11 @@ class Stream implements StreamInterface
      * @return int Returns the number of bytes written to the stream.
      * @throws \RuntimeException on failure.
      */
-    public function write(string $string): int
+    public function write($string): int
     {
         if (
                 !$this->isWritable() ||
-                ($written = fwrite($this->handle, $string)) === false
+                ($written = fwrite($this->handle, (string) $string)) === false
         ) {
             throw new RuntimeException('Could not write to stream');
         }
@@ -251,7 +251,7 @@ class Stream implements StreamInterface
         $readeble = array_filter(self::$modes['readable'],
                 function($v) use ($mode) {
             return stripos($mode, $v) !== false;
-        }, ARRAY_FILTER_USE_KEY);
+        }, ARRAY_FILTER_USE_BOTH);
         return !empty($readeble);
     }
 
@@ -265,11 +265,11 @@ class Stream implements StreamInterface
      *     if no bytes are available.
      * @throws \RuntimeException if an error occurs.
      */
-    public function read(int $length): string
+    public function read($length): string
     {
         if (
                 !$this->isReadable() ||
-                ($data = fread($this->handle, $length)) === false
+                ($data = fread($this->handle, (int) $length)) === false
         ) {
             throw new RuntimeException('Could not read from stream');
         }
@@ -306,13 +306,13 @@ class Stream implements StreamInterface
      *     provided. Returns a specific key value if a key is provided and the
      *     value is found, or null if the key is not found.
      */
-    public function getMetadata(string $key = null)
+    public function getMetadata($key = null)
     {
         $meta = stream_get_meta_data($this->handle);
         if (is_null($key) === true) {
             return $meta;
         }
-        return $meta[$key] ?? null;
+        return $meta[(string) $key] ?? null;
     }
 
 }

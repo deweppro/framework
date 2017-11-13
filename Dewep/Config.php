@@ -50,7 +50,7 @@ class Config extends Registry
      */
     final public static function append(array $config)
     {
-        static::$__registry = $config;
+        self::$__registry[self::_class()] = $config;
     }
 
     /**
@@ -69,20 +69,17 @@ class Config extends Registry
      */
     final public static function dirRoot(): string
     {
-        $root = static::get(self::ROOT_DIR);
-        var_export($root);
-        var_export($root);
+        $root = self::get(self::ROOT_DIR);
         if (empty($root)) {
             $root = strtr($_SERVER['DOCUMENT_ROOT'], '\\', '/');
             $root = trim($root, '/');
             $rootArray = explode('/', $root);
             $rootArray = array_slice($rootArray, 0, -1);
             $root = implode('/', $rootArray);
-            var_export($root);
-            static::set(self::ROOT_DIR, "/{$root}");
+            self::set(self::ROOT_DIR, "/{$root}");
         }
 
-        return static::get(self::ROOT_DIR);
+        return self::get(self::ROOT_DIR);
     }
 
     /**

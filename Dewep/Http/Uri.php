@@ -264,10 +264,10 @@ class Uri implements UriInterface
      * @return static A new instance with the specified scheme.
      * @throws \InvalidArgumentException for invalid or unsupported schemes.
      */
-    public function withScheme(string $scheme): UriInterface
+    public function withScheme($scheme): Uri
     {
         $clone = clone $this;
-        $clone->scheme = $scheme;
+        $clone->scheme = (string) $scheme;
         return $clone;
     }
 
@@ -285,11 +285,11 @@ class Uri implements UriInterface
      * @param null|string $password The password associated with $user.
      * @return static A new instance with the specified user information.
      */
-    public function withUserInfo(string $user, string $password = null): UriInterface
+    public function withUserInfo($user, $password = null): Uri
     {
         $clone = clone $this;
-        $clone->user = $user;
-        $clone->password = $password ?? '';
+        $clone->user = (string) $user;
+        $clone->password = (string) $password ?? '';
         return $clone;
     }
 
@@ -305,10 +305,10 @@ class Uri implements UriInterface
      * @return static A new instance with the specified host.
      * @throws \InvalidArgumentException for invalid hostnames.
      */
-    public function withHost(string $host): UriInterface
+    public function withHost($host): Uri
     {
         $clone = clone $this;
-        $clone->host = $host;
+        $clone->host = (string) $host;
         return $clone;
     }
 
@@ -329,10 +329,10 @@ class Uri implements UriInterface
      * @return static A new instance with the specified port.
      * @throws \InvalidArgumentException for invalid ports.
      */
-    public function withPort(int $port = null): UriInterface
+    public function withPort($port = null): Uri
     {
         $clone = clone $this;
-        $clone->port = $port;
+        $clone->port = (int) $port;
         return $clone;
     }
 
@@ -358,10 +358,10 @@ class Uri implements UriInterface
      * @return static A new instance with the specified path.
      * @throws \InvalidArgumentException for invalid paths.
      */
-    public function withPath(string $path): UriInterface
+    public function withPath($path): Uri
     {
         $clone = clone $this;
-        $clone->path = $path;
+        $clone->path = (string) $path;
         return $clone;
     }
 
@@ -380,10 +380,10 @@ class Uri implements UriInterface
      * @return static A new instance with the specified query string.
      * @throws \InvalidArgumentException for invalid query strings.
      */
-    public function withQuery(string $query): UriInterface
+    public function withQuery($query): Uri
     {
         $clone = clone $this;
-        $clone->query = $query;
+        $clone->query = (string) $query;
         return $clone;
     }
 
@@ -401,10 +401,10 @@ class Uri implements UriInterface
      * @param string $fragment The fragment to use with the new instance.
      * @return static A new instance with the specified fragment.
      */
-    public function withFragment(string $fragment): UriInterface
+    public function withFragment($fragment): Uri
     {
         $clone = clone $this;
-        $clone->fragment = trim($fragment, '#');
+        $clone->fragment = trim((string) $fragment, '#');
         return $clone;
     }
 

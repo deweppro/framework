@@ -100,7 +100,6 @@ class Error
             'errorFile' => $file . ':' . $line,
             'errorCode' => $no
         ]);
-
         die;
     }
 

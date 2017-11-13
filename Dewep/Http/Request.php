@@ -102,7 +102,7 @@ class Request extends Message implements ServerRequestInterface
     {
         $url = Uri::bootstrap();
         $headers = Headers::bootstrap();
-        $route = new Route(Config::get('routes'), $headers);
+        $route = (new Route(Config::get('routes'), $headers))->bind();
         $body = Stream::bootstrap();
         $uploadedFiles = UploadedFile::bootstrap();
 
@@ -117,13 +117,13 @@ class Request extends Message implements ServerRequestInterface
      * @param StreamInterface $body
      * @param array $uploadedFiles
      */
-    public function __construct(UriInterface $url, Route $route,
-            Headers $headers, StreamInterface $body, array $uploadedFiles)
+    public function __construct(Uri $url, Route $route, Headers $headers,
+            Stream $body, array $uploadedFiles)
     {
         $this->url = $url;
-        $this->route = &$route;
-        $this->headers = &$headers;
-        $this->body = &$body;
+        $this->route = $route;
+        $this->headers = $headers;
+        $this->body = $body;
         //--
         $this->uploadedFiles = &$uploadedFiles;
     }
@@ -174,7 +174,7 @@ class Request extends Message implements ServerRequestInterface
      * @param array $cookies Array of key/value pairs representing cookies.
      * @return static
      */
-    public function withCookieParams(array $cookies): ServerRequestInterface
+    public function withCookieParams(array $cookies): Request
     {
         $clone = clone $this;
         foreach ($cookies as $key => $value) {
@@ -222,7 +222,7 @@ class Request extends Message implements ServerRequestInterface
      *     $_GET.
      * @return static
      */
-    public function withQueryParams(array $query): ServerRequestInterface
+    public function withQueryParams(array $query): Request
     {
         $clone = clone $this;
         $clone->url->withQuery(http_build_query($query));
@@ -257,7 +257,7 @@ class Request extends Message implements ServerRequestInterface
      * @return static
      * @throws \InvalidArgumentException if an invalid structure is provided.
      */
-    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
+    public function withUploadedFiles(array $uploadedFiles): Request
     {
         $clone = clone $this;
         $clone->uploadedFiles = $uploadedFiles;
@@ -350,7 +350,7 @@ class Request extends Message implements ServerRequestInterface
      * @throws \InvalidArgumentException if an unsupported argument type is
      *     provided.
      */
-    public function withParsedBody($data): ServerRequestInterface
+    public function withParsedBody($data): Request
     {
         if (
                 !is_array($data) &&
@@ -395,7 +395,7 @@ class Request extends Message implements ServerRequestInterface
      * @param mixed $default Default value to return if the attribute does not exist.
      * @return mixed
      */
-    public function getAttribute(string $name, $default = null)
+    public function getAttribute($name, $default = null)
     {
         return $this->route->getAttribute($name, $default);
     }
@@ -415,7 +415,7 @@ class Request extends Message implements ServerRequestInterface
      * @param mixed $value The value of the attribute.
      * @return static
      */
-    public function withAttribute(string $name, $value): ServerRequestInterface
+    public function withAttribute($name, $value): Request
     {
         $clone = clone $this;
         $clone->route->setAttribute($name, $value);
@@ -436,7 +436,7 @@ class Request extends Message implements ServerRequestInterface
      * @param string $name The attribute name.
      * @return static
      */
-    public function withoutAttribute(string $name): ServerRequestInterface
+    public function withoutAttribute($name): Request
     {
         $clone = clone $this;
         $clone->route->removeAttribute($name);
@@ -487,7 +487,7 @@ class Request extends Message implements ServerRequestInterface
      * @param mixed $requestTarget
      * @return static
      */
-    public function withRequestTarget(string $requestTarget): ServerRequestInterface
+    public function withRequestTarget($requestTarget): Request
     {
         $requestTarget = strtr($requestTarget, ' ', '');
         @list($path, $query) = explode('?', $requestTarget, 2);
@@ -526,7 +526,7 @@ class Request extends Message implements ServerRequestInterface
      * @return static
      * @throws \InvalidArgumentException for invalid HTTP methods.
      */
-    public function withMethod(string $method): ServerRequestInterface
+    public function withMethod($method): Request
     {
         $method = strtoupper($method);
         if (!in_array($method, $this->validMethods)) {
@@ -546,7 +546,7 @@ class Request extends Message implements ServerRequestInterface
      * @return UriInterface Returns a UriInterface instance
      *     representing the URI of the request.
      */
-    public function getUri(): UriInterface
+    public function getUri(): Uri
     {
         return $this->uri;
     }
@@ -581,7 +581,7 @@ class Request extends Message implements ServerRequestInterface
      * @param bool $preserveHost Preserve the original state of the Host header.
      * @return static
      */
-    public function withUri(UriInterface $uri, bool $preserveHost = false): ServerRequestInterface
+    public function withUri(UriInterface $uri, $preserveHost = false): Request
     {
         $clone = clone $this;
         $clone->uri = $uri;
