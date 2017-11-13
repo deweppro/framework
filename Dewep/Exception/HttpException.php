@@ -5,7 +5,7 @@ namespace Dewep\Exception;
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
-class FileExeption extends \Exception
+class HttpException extends \Exception
 {
     //put your code here
 }

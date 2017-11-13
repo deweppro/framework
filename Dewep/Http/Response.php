@@ -4,7 +4,7 @@ namespace Dewep\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Dewep\Exception\InvalidArgumentException;
-use Dewep\Exception\HttpExeption;
+use Dewep\Exception\HttpException;
 use Dewep\Parsers\Response as Resp;
 use Dewep\Config;
 
@@ -216,7 +216,7 @@ class Response extends Message implements ResponseInterface
                 $head = Resp::HTTP_HTML;
                 $handler = '\Dewep\Parsers\Response::html';
             } else {
-                throw new HttpExeption('Specified is not a valid response type.');
+                throw new HttpException('Specified is not a valid response type.');
             }
         } else {
             $head = $response['head'] ?? Resp::HTTP_JSON;

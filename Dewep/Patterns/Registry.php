@@ -46,7 +46,7 @@ abstract class Registry
      */
     final public static function set(string $key, $value)
     {
-        self::$__registry[$key] = $value;
+        static::$__registry[$key] = $value;
     }
 
     /**
@@ -57,9 +57,13 @@ abstract class Registry
      */
     final public static function get(string $key, $default = null)
     {
-        return self::$__registry[$key] ?? $default ?? function() use ($key) {
+        if (isset(static::$__registry[$key])) {
+            return static::$__registry[$key];
+        } elseif (!is_null($default)) {
+            return $default;
+        } else {
             throw new RuntimeException("Registry key - {$key} - not found");
-        };
+        }
     }
 
     /**
@@ -69,7 +73,7 @@ abstract class Registry
      */
     final public static function has(string $key)
     {
-        return isset(self::$__registry[$key]);
+        return isset(static::$__registry[$key]);
     }
 
     /**
@@ -78,7 +82,7 @@ abstract class Registry
      */
     final public static function remove(string $key)
     {
-        unset(self::$__registry[$key]);
+        unset(static::$__registry[$key]);
     }
 
     /**
@@ -86,7 +90,7 @@ abstract class Registry
      */
     final public static function reset()
     {
-        unset(self::$__registry[$key]);
+        unset(static::$__registry[$key]);
     }
 
     /*

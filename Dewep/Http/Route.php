@@ -5,7 +5,7 @@ namespace Dewep\Http;
 use Dewep\Http\HeaderType;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
-use Dewep\Exception\HttpExeption;
+use Dewep\Exception\HttpException;
 
 /**
  * Fast-Route
@@ -46,7 +46,7 @@ class Route
     /**
      *
      * @return $this
-     * @throws HttpExeption
+     * @throws HttpException
      */
     public function bind(): Route
     {
@@ -67,10 +67,10 @@ class Route
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
-                throw new HttpExeption('Method not found', 404);
+                throw new HttpException('Method not found', 404);
                 break;
             case Dispatcher::METHOD_NOT_ALLOWED:
-                throw new HttpExeption('Method not allowed', 405);
+                throw new HttpException('Method not allowed', 405);
                 break;
         }
 
@@ -131,7 +131,7 @@ class Route
     public function getHandler()
     {
         return $this->result[1] ?? function () {
-            throw new HttpExeption('Handler is not found', 500);
+            throw new HttpException('Handler is not found', 500);
         };
     }
 

@@ -26,7 +26,7 @@
 
 namespace Dewep\Parsers;
 
-use Dewep\Exception\FileExeption;
+use Dewep\Exception\FileException;
 use Symfony\Component\Yaml\Yaml as Y;
 
 /**
@@ -42,7 +42,7 @@ class Yaml
         $tempDir = $tempDir ?? sys_get_temp_dir();
         $yaml = [];
         if (is_file($path) && is_readable($path)) {
-            $tempFileName = $tempDir . hash('md5',
+            $tempFileName = $tempDir . '/' . hash('md5',
                             $path . ':' . filectime($path)) . '.yml.json';
 
             if (file_exists($tempFileName)) {
@@ -58,7 +58,7 @@ class Yaml
                 $yaml = [];
             }
         } else {
-            throw new FileExeption($path . ' is not found or cannot be read.');
+            throw new FileException($path . ' is not found or cannot be read.');
         }
         return $yaml;
     }

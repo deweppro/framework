@@ -39,8 +39,15 @@ use Dewep\Middleware\Builder as MB;
 class Application
 {
 
+    /**
+     *
+     * @param string $configFilePath
+     */
     public function __construct(string $configFilePath)
     {
+        echo $configFilePath;
+        die;
+        Config::makeSysFolders();
         Config::fromYaml($configFilePath);
 
         Container::exist('logger',
@@ -58,6 +65,9 @@ class Application
         Error::bootstrap();
     }
 
+    /**
+     *
+     */
     public function bootstrap()
     {
         $response = Response::bootstrap();
@@ -75,7 +85,7 @@ class Application
         $attributes = $request->getAttributes();
         $heandler = $request->route->getHandler();
 
-        list($class, $method) = explode('::', $heandler);
+        list($class, $method) = explode('::', $heandler, 2);
 
         $object = new $class($request, $response);
         $content = call_user_func_array([$object, $method], $attributes);
@@ -87,6 +97,7 @@ class Application
         }
 
         echo $response;
+        die;
     }
 
 }

@@ -43,7 +43,7 @@ class Error
     public static function bootstrap()
     {
         set_error_handler('\\Dewep\\Handlers\\Error::error');
-        set_exception_handler('\\Dewep\\Handlers\\Error::exeption');
+        set_exception_handler('\\Dewep\\Handlers\\Error::exception');
 
         ini_set('display_errors', 1);
         error_reporting(-1);
@@ -72,7 +72,7 @@ class Error
      * @param \Throwable $e
      * @return type
      */
-    public static function exeption(\Throwable $e)
+    public static function exception(\Throwable $e)
     {
         return self::build($e->getCode(), $e->getMessage(), $e->getFile(),
                         $e->getLine(), $e->getTrace());
