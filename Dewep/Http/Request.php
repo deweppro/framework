@@ -6,7 +6,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
 use Dewep\Exception\InvalidArgumentException;
-use Dewep\Parsers\Body as BodyParser;
+use Dewep\Parsers\Request as BodyParser;
 use Dewep\Config;
 
 /**
@@ -76,8 +76,20 @@ class Request extends Message implements ServerRequestInterface
         'CONNECT', 'DELETE', 'GET', 'HEAD',
         'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE',
     ];
+
+    /**
+     * @var Uri
+     */
     protected $url;
-    protected $route;
+
+    /**
+     * @var Route
+     */
+    public $route;
+
+    /**
+     * @var UploadedFile
+     */
     protected $uploadedFiles;
     protected $bodyParsers;
     protected $bodyParsed = false;
@@ -302,12 +314,12 @@ class Request extends Message implements ServerRequestInterface
      */
     private function setDefaultParsersBody()
     {
-        $this->bodyParsers[BodyParser::JSON] = '\Dewep\Parsers\Body::json';
-        $this->bodyParsers[BodyParser::XML_APP] = '\Dewep\Parsers\Body::xml';
-        $this->bodyParsers[BodyParser::XML_TEXT] = '\Dewep\Parsers\Body::xml';
-        $this->bodyParsers[BodyParser::FORM_DATA] = '\Dewep\Parsers\Body::url';
-        $this->bodyParsers[BodyParser::FORM_WWW] = '\Dewep\Parsers\Body::other';
-        $this->bodyParsers['*'] = '\Dewep\Parsers\Body::other';
+        $this->bodyParsers[BodyParser::JSON] = '\Dewep\Parsers\Request::json';
+        $this->bodyParsers[BodyParser::XML_APP] = '\Dewep\Parsers\Request::xml';
+        $this->bodyParsers[BodyParser::XML_TEXT] = '\Dewep\Parsers\Request::xml';
+        $this->bodyParsers[BodyParser::FORM_DATA] = '\Dewep\Parsers\Request::url';
+        $this->bodyParsers[BodyParser::FORM_WWW] = '\Dewep\Parsers\Request::other';
+        $this->bodyParsers['*'] = '\Dewep\Parsers\Request::other';
     }
 
     /**

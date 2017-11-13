@@ -4,6 +4,9 @@ namespace Dewep\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Dewep\Exception\InvalidArgumentException;
+use Dewep\Exception\HttpExeption;
+use Dewep\Parsers\Response as Resp;
+use Dewep\Config;
 
 /**
  * Representation of an outgoing, server-side response.
@@ -24,8 +27,6 @@ use Dewep\Exception\InvalidArgumentException;
  */
 class Response extends Message implements ResponseInterface
 {
-
-    const EOL = "\r\n";
 
     protected static $messages = [
         //1xx
@@ -200,19 +201,54 @@ class Response extends Message implements ResponseInterface
         return '';
     }
 
-    public function __toString()
+    public function setBody($body)
     {
-        $output = sprintf(
+        $response = Config::get('response');
+
+        if (is_string($response)) {
+            if ($response == Resp::TYPE_JSON) {
+                $head = Resp::HTTP_JSON;
+                $handler = '\Dewep\Parsers\Response::json';
+            } elseif ($response == Resp::TYPE_XML) {
+                $head = Resp::HTTP_XML;
+                $handler = '\Dewep\Parsers\Response::xml';
+            } elseif ($response == Resp::TYPE_HTML) {
+                $head = Resp::HTTP_HTML;
+                $handler = '\Dewep\Parsers\Response::html';
+            } else {
+                throw new HttpExeption('Specified is not a valid response type.');
+            }
+        } else {
+            $head = $response['head'] ?? Resp::HTTP_JSON;
+            $handler = $response['handler'] ?? '\Dewep\Parsers\Response::json';
+        }
+
+        $content = call_user_func_array($handler, [$body]);
+
+        $stream = new Stream(fopen('php://temp', 'w+'));
+        $stream->write($content);
+
+        $clone = $this->withBody($stream);
+        return $clone->withHeader();
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        $http = sprintf(
                 'HTTP/%s %s %s', $this->getProtocolVersion(),
                 $this->getStatusCode(), $this->getReasonPhrase()
         );
-        $output .= self::EOL;
+        header($http, true);
+
         foreach ($this->getHeaders() as $name => $values) {
-            $output .= sprintf('%s: %s', $name, $this->getHeaderLine($name)) . self::EOL;
+            $line = sprintf('%s: %s', $name, $this->getHeaderLine($name));
+            header($line, true);
         }
-        $output .= self::EOL;
-        $output .= (string) $this->getBody();
-        return $output;
+        return (string) $this->getBody();
     }
 
 }

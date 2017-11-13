@@ -35,23 +35,23 @@ class HeaderType
 {
 
     // with HTTP_
-    const ACCEPT_LANGUAGE = 'ACCEPT_LANGUAGE';
-    const ACCEPT_ENCODING = 'ACCEPT_ENCODING';
-    const REFERER = 'REFERER';
-    const USER_AGENT = 'USER_AGENT';
-    const CONNECTION = 'CONNECTION';
-    const HOST = 'HOST';
+    const ACCEPT_LANGUAGE = 'Accept-Language';
+    const ACCEPT_ENCODING = 'Accept-Encoding';
+    const REFERER = 'Referer';
+    const USER_AGENT = 'User-Agent';
+    const CONNECTION = 'Connection';
+    const HOST = 'Host';
     // without HTTP_
-    const REQUEST_SCHEME = 'REQUEST_SCHEME';
-    const SERVER_PROTOCOL = 'SERVER_PROTOCOL';
-    const DOCUMENT_ROOT = 'DOCUMENT_ROOT';
-    const DOCUMENT_URI = 'DOCUMENT_URI';
-    const REQUEST_URI = 'REQUEST_URI';
-    const SCRIPT_NAME = 'SCRIPT_NAME';
-    const CONTENT_LENGTH = 'CONTENT_LENGTH';
-    const CONTENT_TYPE = 'CONTENT_TYPE';
-    const REQUEST_METHOD = 'REQUEST_METHOD';
-    const QUERY_STRING = 'QUERY_STRING';
-    const REQUEST_TIME = 'REQUEST_TIME';
+    const REQUEST_SCHEME = 'Request-Scheme';
+    const SERVER_PROTOCOL = 'Server-Protocol';
+    const DOCUMENT_ROOT = 'Document-Root';
+    const DOCUMENT_URI = 'Document-Uri';
+    const REQUEST_URI = 'Request-Uri';
+    const SCRIPT_NAME = 'Script-Name';
+    const CONTENT_LENGTH = 'Content-Length';
+    const CONTENT_TYPE = 'Content-Type';
+    const REQUEST_METHOD = 'Request-Method';
+    const QUERY_STRING = 'Query-String';
+    const REQUEST_TIME = 'Request-Time';
 
 }
