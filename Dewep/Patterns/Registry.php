@@ -26,8 +26,6 @@
 
 namespace Dewep\Patterns;
 
-use Dewep\Exception\RuntimeException;
-
 /**
  * Description of Registry
  *
@@ -57,13 +55,7 @@ abstract class Registry
      */
     final public static function get(string $key, $default = null)
     {
-        if (isset(static::$__registry[$key])) {
-            return static::$__registry[$key];
-        } elseif (!is_null($default)) {
-            return $default;
-        } else {
-            throw new RuntimeException("Registry key - {$key} - not found");
-        }
+        return static::$__registry[$key] ?? $default;
     }
 
     /**
