@@ -26,7 +26,8 @@
 
 namespace Dewep\Handlers;
 
-use Dewep\Logger;
+use Dewep\Container;
+use Psr\Http\Message\ResponseInterface as Response;
 
 /**
  * Description of Error
@@ -39,7 +40,7 @@ class Error
     /**
      *
      */
-    public static function init()
+    public static function bootstrap()
     {
         set_error_handler('\\Dewep\\Handlers\\Error::error');
         set_exception_handler('\\Dewep\\Handlers\\Error::exeption');
@@ -91,9 +92,16 @@ class Error
         $file = array_slice($file, count($file) - 3);
         $file = implode('/', $file);
 
-        $message = "{$no}: {$str} in {$file}:{$line}";
+        Container::get('logger')->error("{$no}: {$str} in {$file}:{$line}",
+                $trace);
 
-        //Logger::jot($message, $trace);
+        echo Container::get('response')->setBody([
+            'errorMessage' => $str,
+            'errorFile' => $file . ':' . $line,
+            'errorCode' => $no
+        ]);
+
+        die;
     }
 
 }
