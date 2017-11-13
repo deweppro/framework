@@ -1,0 +1,23 @@
+# логирование
+debug: true 
+
+# формат ответа из стандартных фариантов
+response: json
+# формат ответа с использованием заголовка и своего обработчика
+#response:
+#    head: application/json; charset=UTF-8'
+#    handler: Dewep\Parsers\Response::json
+
+
+# роуты
+routes:
+# ссылка с поддержкой атрибут - /{user}/name
+    /:
+# метод запроса через запятую [CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE]: обработчик в формате КЛАСС::метод
+        GET: Dewep\Demo::demo
+        
+        
+middleware:
+    request:
+        
+    response:

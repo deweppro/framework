@@ -30,21 +30,19 @@ use Dewep\Patterns\Registry;
 use Dewep\Parsers\Yaml;
 
 /**
- * Description of Config
- *
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
 class Config extends Registry
 {
 
     const ROOT_DIR = 'root';
-    const DATA_DIR = 'data/';
-    const DB_DIR = 'db/';
-    const SRC_DIR = 'src/';
-    const TEMP_DIR = 'temp/';
-    const VIEW_DIR = 'view/';
-    const WWW_DIR = 'www/';
-    const STORAGE_DIR = 'storage/';
+    const DATA_DIR = 'data';
+    const DB_DIR = 'db';
+    const SRC_DIR = 'src';
+    const TEMP_DIR = 'temp';
+    const VIEW_DIR = 'view';
+    const WWW_DIR = 'www';
+    const STORAGE_DIR = 'storage';
 
     /**
      *
@@ -65,6 +63,10 @@ class Config extends Registry
         self::append($config);
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirRoot(): string
     {
         $root = self::get(self::ROOT_DIR);
@@ -79,39 +81,89 @@ class Config extends Registry
         return self::$__dirs[self::ROOT_DIR];
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirData(): string
     {
         return self::dirRoot() . '/' . self::DATA_DIR;
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirDb(): string
     {
         return self::dirRoot() . '/' . self::DB_DIR;
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirSrc(): string
     {
         return self::dirRoot() . '/' . self::SRC_DIR;
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirTemp(): string
     {
         return self::dirRoot() . '/' . self::TEMP_DIR;
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirView(): string
     {
         return self::dirRoot() . '/' . self::VIEW_DIR;
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirWww(): string
     {
         return self::dirRoot() . '/' . self::WWW_DIR;
     }
 
+    /**
+     *
+     * @return string
+     */
     final public static function dirStorage(): string
     {
         return self::dirRoot() . '/' . self::STORAGE_DIR;
+    }
+
+    /**
+     *
+     */
+    final public static function makeSysFolders()
+    {
+        $dirs = [
+            self::dirData(),
+            self::dirDb(),
+            self::dirSrc(),
+            self::dirStorage(),
+            self::dirTemp(),
+            self::dirView(),
+            self::dirWww(),
+        ];
+
+        foreach ($dirs as $dir) {
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777);
+            }
+        }
     }
 
 }
