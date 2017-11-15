@@ -50,7 +50,7 @@ class Config extends Registry
      */
     final public static function append(array $config)
     {
-        self::$__registry[self::_class()] = $config;
+        self::$__registry[self::__class()] = $config;
     }
 
     /**

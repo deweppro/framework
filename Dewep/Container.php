@@ -37,19 +37,24 @@ class Container extends Registry
 {
 
     /**
-     *
+     * Можно передать:
+     * - замыкание
+     * - объект
+     * - строку для вызыва функции
      * @param string $key
      * @param type $value
      */
-    public static function exist(string $key, $value)
+    protected static function value($value)
     {
-        if (!isset(self::$__registry[self::_class()][$key])) {
-            if ($value instanceof \Closure) {
-                self::$__registry[self::_class()][$key] = $value();
-            } else {
-                self::$__registry[self::_class()][$key] = $value;
+        if ($value instanceof \Closure) {
+            return $value();
+        } elseif (is_string($value)) {
+            $obj = call_user_func($value);
+            if ($obj !== false) {
+                return $obj;
             }
         }
+        return $value;
     }
 
 }

@@ -49,9 +49,11 @@ class Yaml
                 $yaml = json_decode(file_get_contents($tempFileName), true);
             } else {
                 $yaml = Y::parse(file_get_contents($path));
-                file_put_contents($tempFileName,
-                        json_encode($yaml,
-                                JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                if (is_writeable($tempDir)) {
+                    file_put_contents($tempFileName,
+                            json_encode($yaml,
+                                    JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                }
             }
 
             if (empty($yaml)) {
