@@ -52,7 +52,7 @@ class Response
     public static function html(array $body): string
     {
         $xml = self::xml($body, '<html/>');
-        $doc = new \DOMDocument('1.0', 'UTF-8');
+        $doc = new \DOMDocument(5, 'UTF-8');
         $doc->loadXML($xml);
         return $doc->saveHTML();
     }
