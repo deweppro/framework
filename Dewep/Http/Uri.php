@@ -38,6 +38,49 @@ class Uri implements UriInterface
     protected $path = '';
     protected $query = '';
     protected $fragment = '';
+    protected static $schemePortDefault = [
+        //-- общепринятые
+        'ftp' => 21,
+        'http' => 80,
+        'rtmp' => null,
+        'rtsp' => null,
+        'https' => 443,
+        'gopher' => null,
+        'mailto' => null,
+        'news' => null,
+        'nntp' => null,
+        'irc' => null,
+        'smb' => null,
+        'prospero' => null,
+        'telnet' => null,
+        'wais' => null,
+        'xmpp' => null,
+        'file' => null,
+        'data' => null,
+        'tel' => null,
+        //-- экзотические
+        'afs' => null,
+        'cid' => null,
+        'mid' => null,
+        'mailserver' => null,
+        'nfs' => null,
+        'tn3270' => null,
+        'z39.50' => null,
+        'skype' => null,
+        'smsto' => null,
+        'ed2k' => null,
+        'market' => null,
+        'steam' => null,
+        'bitcoin' => null,
+        'ob' => null,
+        'tg' => null,
+        //-- схемы в браузерах
+        'view-source' => null,
+        'chrome' => null,
+        'chrome-extension' => null,
+        'opera' => null,
+        'browser' => null,
+    ];
 
     /**
      *
