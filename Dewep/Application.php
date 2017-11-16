@@ -103,7 +103,7 @@ class Application
         echo $response;
     }
 
-    private function getApplication($request, $response)
+    private function getApplication(Request $request, Response $response)
     {
         $attributes = $request->getAttributes();
         $heandler = $request->route->getHandler();
