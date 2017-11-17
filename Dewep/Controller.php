@@ -49,6 +49,12 @@ abstract class Controller
 
     /**
      *
+     * @var \Monolog\Logger
+     */
+    protected $logger;
+
+    /**
+     *
      * @param Request $request
      * @param Response $response
      */
@@ -56,6 +62,8 @@ abstract class Controller
     {
         $this->request = $request;
         $this->response = $response;
+
+        $this->logger = Container::get('logger');
     }
 
 }
