@@ -14,7 +14,7 @@ class Headers implements ActionIntrface
 
     use HttpTrait;
 
-    protected $headers;
+    protected $headers = [];
     protected $serverParams = [];
     protected $cookies = [];
 
