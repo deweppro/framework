@@ -29,7 +29,7 @@ class Response
      */
     public static function json(array $body): string
     {
-        return json_encode($body, JSON_UNESCAPED_UNICODE);
+        return json_encode($body);
     }
 
     /**

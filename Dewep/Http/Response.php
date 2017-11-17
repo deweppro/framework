@@ -108,8 +108,8 @@ class Response extends Message implements ResponseInterface
      */
     public static function bootstrap(): Response
     {
-        $headers = Headers::bootstrap();
-        $body = Stream::bootstrap();
+        $headers = new Headers([], $_COOKIE);
+        $body = new Stream(fopen('php://temp', 'r+'));
 
         return new static(200, $headers, $body);
     }

@@ -53,5 +53,6 @@ class HeaderType
     const REQUEST_METHOD = 'Request-Method';
     const QUERY_STRING = 'Query-String';
     const REQUEST_TIME = 'Request-Time';
+    const SERVER_NAME = 'Server-Name';
 
 }

@@ -43,11 +43,11 @@ class Headers implements ActionIntrface
 
         $serverParams = array_diff_key($server, $headers);
         foreach ($serverParams as $key => $value) {
-            $this->serverParams[$this->originalKey($key)] = $value;
+            $this->serverParams[$this->normalizeKey($key)] = $value;
         }
 
         foreach ($cookies as $key => $value) {
-            $this->cookies[$this->originalKey($key)] = $value;
+            $this->cookies[$this->normalizeKey($key)] = $value;
         }
 
 
@@ -171,7 +171,11 @@ class Headers implements ActionIntrface
      */
     public function getServerParams(): array
     {
-        return $this->serverParams;
+        $serverParams = [];
+        foreach ($this->serverParams as $key => $value) {
+            $serverParams[$this->originalKey($key)] = $value;
+        }
+        return $serverParams;
     }
 
     /**
@@ -182,7 +186,7 @@ class Headers implements ActionIntrface
      */
     public function getServerParam(string $key, string $default = null): string
     {
-        $key = $this->originalKey($key);
+        $key = $this->normalizeKey($key);
         return $this->serverParams[$key] ?? $default;
     }
 
@@ -213,7 +217,7 @@ class Headers implements ActionIntrface
             string $path = '/', string $domain = '*', bool $secure = false,
             bool $httponly = false)
     {
-        $key = $this->originalKey($key);
+        $key = $this->normalizeKey($key);
         $this->cookies[$key] = $value;
         setcookie($key, $value, $expire, $path, $domain, $secure, $httponly);
     }
@@ -224,7 +228,7 @@ class Headers implements ActionIntrface
      */
     public function removeCookies(string $key)
     {
-        $key = $this->originalKey($key);
+        $key = $this->normalizeKey($key);
         unset($this->cookies[$key]);
         setcookie($key, '', time() - 1);
     }

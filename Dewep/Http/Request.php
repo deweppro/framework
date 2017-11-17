@@ -126,6 +126,8 @@ class Request extends Message implements ServerRequestInterface
         $this->body = $body;
         //--
         $this->uploadedFiles = &$uploadedFiles;
+        //--
+        $this->setDefaultParsersBody();
     }
 
     /**
@@ -140,6 +142,17 @@ class Request extends Message implements ServerRequestInterface
     public function getServerParams(): array
     {
         return $this->headers->getServerParams();
+    }
+
+    /**
+     *
+     * @param string $key
+     * @param string $default
+     * @return string
+     */
+    public function getServerParam(string $key, string $default = null): string
+    {
+        return $this->headers->getServerParam($key, $default);
     }
 
     /**
@@ -289,10 +302,10 @@ class Request extends Message implements ServerRequestInterface
                 $this->bodyParsed = $_POST;
             } else {
                 if (is_string($handler)) {
-                    $this->bodyParsed = call_user_func_array($handler,
-                            [$this->body->getContents()]);
+                    $this->bodyParsed = call_user_func($handler,
+                            (string) $this->body);
                 } else {
-                    $this->bodyParsed = $handler($this->body->getContents());
+                    $this->bodyParsed = $handler((string) $this->body);
                 }
             }
         }
