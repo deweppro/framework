@@ -89,7 +89,7 @@ class Application
         MB::makes($middleware['request'] ?? [], $request, $response);
 
         $content = $this->getApplication($request, $response);
-        $response->setBody($content);
+        $response->setBody($content ?? null);
 
         MB::makes($middleware['response'] ?? [], $request, $response);
 
