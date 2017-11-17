@@ -104,7 +104,7 @@ class Response extends Message implements ResponseInterface
 
     /**
      *
-     * @return \Dewep\Http\Request
+     * @return \Dewep\Http\Response
      */
     public static function bootstrap(): Response
     {

@@ -285,6 +285,7 @@ class Stream implements StreamInterface
      */
     public function getContents(): string
     {
+        $this->rewind();
         if (
                 !$this->isReadable() ||
                 ($contents = stream_get_contents($this->handle)) === false
