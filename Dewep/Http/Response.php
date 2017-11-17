@@ -224,9 +224,14 @@ class Response extends Message implements ResponseInterface
             } else {
                 throw new HttpException('Specified is not a valid response type.');
             }
+            $body = is_array($body) ? $body : [$body];
         } else {
             $head = $response['head'] ?? Resp::HTTP_JSON;
             $handler = $response['handler'] ?? '\Dewep\Parsers\Response::json';
+
+            if ($handler == '\Dewep\Parsers\Response::json') {
+                $body = is_array($body) ? $body : [$body];
+            }
         }
 
         $content = call_user_func($handler, $body);
