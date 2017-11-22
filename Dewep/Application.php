@@ -29,8 +29,6 @@ namespace Dewep;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
 use Dewep\Handlers\Error;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
 use Dewep\Middleware\Builder as MB;
 use Dewep\Exception\RuntimeException;
 
@@ -55,18 +53,6 @@ class Application
             throw new RuntimeException('Config file not found!');
         }
         Config::fromYaml($configFilePath);
-
-        Container::exist('logger',
-                function() {
-            $debug = Config::get('debug', false);
-            $logfile = Config::dirTemp() . '/app.log';
-
-            $logger = new Logger('app');
-            $logger->pushHandler(new StreamHandler($logfile,
-                    $debug ? Logger::DEBUG : Logger::INFO));
-
-            return $logger;
-        });
 
         Error::bootstrap();
     }

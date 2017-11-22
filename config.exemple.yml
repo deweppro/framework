@@ -21,3 +21,8 @@ middleware:
     request:
         
     response:
+        
+        
+providers:
+    logger: Dewep\Providers\LoggerProvider
+    mysql: Dewep\Providers\MysqlProvider

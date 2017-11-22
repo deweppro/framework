@@ -42,7 +42,7 @@ abstract class Registry
      * @param type $value
      * @throws RuntimeException
      */
-    final public static function set(string $key, $value)
+    public static function set(string $key, $value)
     {
         self::$__registry[self::__class()][$key] = static::value($value);
     }
@@ -52,7 +52,7 @@ abstract class Registry
      * @param string $key
      * @param type $value
      */
-    final public static function exist(string $key, $value)
+    public static function exist(string $key, $value)
     {
         if (!self::has($key)) {
             self::set($key, $value);
@@ -65,7 +65,7 @@ abstract class Registry
      * @param type $default
      * @return type
      */
-    final public static function get(string $key, $default = null)
+    public static function get(string $key, $default = null)
     {
         return self::$__registry[self::__class()][$key] ?? $default;
     }
@@ -75,7 +75,7 @@ abstract class Registry
      * @param string $key
      * @return type
      */
-    final public static function has(string $key)
+    public static function has(string $key)
     {
         return isset(self::$__registry[self::__class()][$key]);
     }
@@ -84,7 +84,7 @@ abstract class Registry
      *
      * @param string $key
      */
-    final public static function remove(string $key)
+    public static function remove(string $key)
     {
         unset(self::$__registry[self::__class()][$key]);
     }
@@ -92,7 +92,7 @@ abstract class Registry
     /**
      *
      */
-    final public static function reset()
+    public static function reset()
     {
         unset(self::$__registry[self::__class()]);
     }
@@ -101,7 +101,7 @@ abstract class Registry
      *
      * @return array
      */
-    final public static function all(): array
+    public static function all(): array
     {
         if (!isset(self::$__registry[self::__class()])) {
             return [];
