@@ -22,7 +22,7 @@
         "monolog/monolog": "^1.0",
         "nikic/fast-route": "^1.2",
         "symfony/yaml": "^3.3",
-        "deweppro/db": "dev-default",
-        "deweppro/client": "dev-default"
+        "deweppro/db": "^1.0.0",
+        "deweppro/client": "^1.0.0"
     }
 }
