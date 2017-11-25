@@ -42,8 +42,8 @@ class MysqlProvider implements ProviderInterface
     {
         $config = Config::get('mysql', []);
         return new Mysql($config['host'] ?? 'localhost',
-                $config['port'] ?? 3306, $config['dbname'] ?? 'default', null,
-                null);
+                $config['port'] ?? 3306, $config['dbname'] ?? 'default',
+                $config['login'] ?? '', $config['password'] ?? '');
     }
 
 }
