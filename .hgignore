@@ -14,7 +14,8 @@ nbproject/
 
 ### Composer template
 composer.phar
-/vendor/
+vendor/
+
 
 .idea/
 composer.lock
