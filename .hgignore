@@ -1,22 +1,20 @@
-.hgtags
-.lock
-/bootstrap/compiled.php
-composer.phar
-composer.lock
-.env.local.php
-.env.php
-.DS_Store
-Thumbs.db
-
-syntax: regexp
-^vendor/
-^temp/
-
-syntax: glob
-.idea
-.settings/
-.project
-.cache/
 nbproject/
-/nbproject/private/
-node_modules/
+.DS_Store
+
+### Mercurial template
+.hg/
+.hgignore
+.hgsigs
+.hgsub
+.hgsubstate
+.hgtags
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+### Composer template
+composer.phar
+/vendor/
+
+.idea/
+composer.lock
