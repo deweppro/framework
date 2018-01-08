@@ -15,9 +15,8 @@ class Request
     const FORM_DATA = 'multipart/form-data';
 
     /**
-     *
      * @param string $body
-     * @return type
+     * @return mixed|null|string
      */
     public static function json(string $body)
     {
@@ -31,9 +30,8 @@ class Request
     }
 
     /**
-     *
      * @param string $body
-     * @return type
+     * @return array|null
      */
     public static function url(string $body)
     {
@@ -51,9 +49,8 @@ class Request
     }
 
     /**
-     *
      * @param string $body
-     * @return type
+     * @return null|\SimpleXMLElement|string
      */
     public static function xml(string $body)
     {
@@ -73,9 +70,8 @@ class Request
     }
 
     /**
-     *
-     * @param type $body
-     * @return type
+     * @param $body
+     * @return null
      */
     public static function other($body)
     {

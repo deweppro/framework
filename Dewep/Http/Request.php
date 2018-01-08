@@ -2,12 +2,12 @@
 
 namespace Dewep\Http;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\StreamInterface;
+use Dewep\Config;
 use Dewep\Exception\InvalidArgumentException;
 use Dewep\Parsers\Request as BodyParser;
-use Dewep\Config;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Representation of an incoming, server-side HTTP request.
@@ -91,12 +91,18 @@ class Request extends Message implements ServerRequestInterface
      * @var UploadedFile
      */
     protected $uploadedFiles;
+    /**
+     * @var mixed
+     */
     protected $bodyParsers;
+    /**
+     * @var bool
+     */
     protected $bodyParsed = false;
 
     /**
-     *
-     * @return \Dewep\Http\Request
+     * @return Request
+     * @throws \Dewep\Exception\HttpException
      */
     public static function bootstrap(): Request
     {
@@ -110,11 +116,11 @@ class Request extends Message implements ServerRequestInterface
     }
 
     /**
-     *
-     * @param UriInterface $url
-     * @param \Dewep\Http\Route $route
-     * @param \Dewep\Http\Headers $headers
-     * @param StreamInterface $body
+     * Request constructor.
+     * @param Uri $url
+     * @param Route $route
+     * @param Headers $headers
+     * @param Stream $body
      * @param array $uploadedFiles
      */
     public function __construct(Uri $url, Route $route, Headers $headers,
@@ -145,9 +151,8 @@ class Request extends Message implements ServerRequestInterface
     }
 
     /**
-     *
      * @param string $key
-     * @param string $default
+     * @param string|null $default
      * @return string
      */
     public function getServerParam(string $key, string $default = null): string
@@ -313,9 +318,8 @@ class Request extends Message implements ServerRequestInterface
     }
 
     /**
-     *
      * @param string $type
-     * @param type $function
+     * @param $function
      */
     public function setParserBody(string $type, $function)
     {

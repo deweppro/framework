@@ -2,9 +2,9 @@
 
 namespace Dewep\Http;
 
+use Dewep\Exception\RuntimeException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
-use Dewep\Exception\RuntimeException;
 
 /**
  * HTTP messages consist of requests from a client to a server and responses
@@ -24,25 +24,21 @@ abstract class Message implements MessageInterface
 {
 
     /**
-     *
-     * @var string
-     */
-    protected $protocolVersion = '1.1';
-
-    /**
-     *
      * @var array
      */
     protected static $validProtocolVersions = ['1.0', '1.1', '2.0', '2',];
 
     /**
-     *
+     * @var string
+     */
+    protected $protocolVersion = '1.1';
+
+    /**
      * @var \Dewep\Http\Headers
      */
     protected $headers;
 
     /**
-     *
      * @var \Psr\Http\Message\StreamInterface
      */
     protected $body;

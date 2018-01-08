@@ -3,9 +3,8 @@
 namespace Dewep\Http;
 
 use Dewep\Exception\RuntimeException;
-use Dewep\Exception\InvalidArgumentException;
-use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Value object representing a file uploaded through an HTTP request.
@@ -29,29 +28,12 @@ class UploadedFile implements UploadedFileInterface
     protected $moved = false;
 
     /**
-     *
-     * @return array
-     */
-    public static function bootstrap(): array
-    {
-        $files = [];
-
-        foreach ($_FILES as $id => $file) {
-            $files[$id] = new static($file['tmp_name'] ?? null,
-                    $file['name'] ?? null, $file['type'] ?? null,
-                    $file['size'] ?? null, $file['error'] ?? null);
-        }
-
-        return $files;
-    }
-
-    /**
-     *
-     * @param type $file
-     * @param type $name
-     * @param type $type
-     * @param type $size
-     * @param type $error
+     * UploadedFile constructor.
+     * @param $file
+     * @param $name
+     * @param $type
+     * @param $size
+     * @param $error
      */
     public function __construct($file, $name, $type, $size, $error)
     {
@@ -60,6 +42,22 @@ class UploadedFile implements UploadedFileInterface
         $this->type = $type;
         $this->size = $size;
         $this->error = $error;
+    }
+
+    /**
+     * @return array
+     */
+    public static function bootstrap(): array
+    {
+        $files = [];
+
+        foreach ($_FILES as $id => $file) {
+            $files[$id] = new static($file['tmp_name'] ?? null,
+                $file['name'] ?? null, $file['type'] ?? null,
+                $file['size'] ?? null, $file['error'] ?? null);
+        }
+
+        return $files;
     }
 
     /**
@@ -82,7 +80,7 @@ class UploadedFile implements UploadedFileInterface
     {
         if ($this->moved) {
             throw new RuntimeException("Uploaded file {$this->name} "
-            . "has already been moved");
+                . "has already been moved");
         }
         if (is_null($this->stream)) {
             $this->stream = new Stream(fopen($this->file, 'r'));
@@ -127,9 +125,9 @@ class UploadedFile implements UploadedFileInterface
         if ($this->moved) {
             throw new RuntimeException('Uploaded file already moved');
         }
-        if (!move_uploaded_file($this->file, (string) $targetPath)) {
+        if (!move_uploaded_file($this->file, (string)$targetPath)) {
             throw new RuntimeException("Error moving uploaded "
-            . "file {$this->name} to {$targetPath}");
+                . "file {$this->name} to {$targetPath}");
         }
         $this->moved = true;
     }

@@ -2,8 +2,8 @@
 
 namespace Dewep\Http;
 
-use Psr\Http\Message\StreamInterface;
 use Dewep\Exception\RuntimeException;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Describes a data stream.
@@ -28,22 +28,8 @@ class Stream implements StreamInterface
     private $pipe = false;
 
     /**
-     *
-     * @return StreamInterface
-     */
-    public static function bootstrap($handle = null): Stream
-    {
-        if (!is_resource($handle)) {
-            $handle = fopen('php://temp', 'r+');
-            stream_copy_to_stream(fopen('php://input', 'r'), $handle);
-            rewind($handle);
-        }
-        return new static($handle);
-    }
-
-    /**
-     *
-     * @param type $handle
+     * Stream constructor.
+     * @param null $handle
      * @throws RuntimeException
      */
     public function __construct($handle = null)
@@ -60,6 +46,20 @@ class Stream implements StreamInterface
         } else {
             throw new RuntimeException('Undefined resource mode.');
         }
+    }
+
+    /**
+     * @param null $handle
+     * @return Stream
+     */
+    public static function bootstrap($handle = null): Stream
+    {
+        if (!is_resource($handle)) {
+            $handle = fopen('php://temp', 'r+');
+            stream_copy_to_stream(fopen('php://input', 'r'), $handle);
+            rewind($handle);
+        }
+        return new static($handle);
     }
 
     /**
@@ -84,6 +84,92 @@ class Stream implements StreamInterface
         } catch (\Exception $e) {
             return '';
         }
+    }
+
+    /**
+     * Seek to the beginning of the stream.
+     *
+     * If the stream is not seekable, this method will raise an exception;
+     * otherwise, it will perform a seek(0).
+     *
+     * @see seek()
+     * @link http://www.php.net/manual/en/function.fseek.php
+     * @throws \RuntimeException on failure.
+     */
+    public function rewind()
+    {
+        if (
+            !$this->isSeekable() ||
+            rewind($this->handle) === false
+        ) {
+            throw new RuntimeException('Could not rewind stream');
+        }
+    }
+
+    /**
+     * Returns whether or not the stream is seekable.
+     *
+     * @return bool
+     */
+    public function isSeekable()
+    {
+        $mode = $this->getMetadata('seekable');
+
+        return $mode ?? false;
+    }
+
+    /**
+     * Get stream metadata as an associative array or retrieve a specific key.
+     *
+     * The keys returned are identical to the keys returned from PHP's
+     * stream_get_meta_data() function.
+     *
+     * @link http://php.net/manual/en/function.stream-get-meta-data.php
+     * @param string $key Specific metadata to retrieve.
+     * @return array|mixed|null Returns an associative array if no key is
+     *     provided. Returns a specific key value if a key is provided and the
+     *     value is found, or null if the key is not found.
+     */
+    public function getMetadata($key = null)
+    {
+        $meta = stream_get_meta_data($this->handle);
+        if (is_null($key) === true) {
+            return $meta;
+        }
+        return $meta[(string)$key] ?? null;
+    }
+
+    /**
+     * Returns the remaining contents in a string
+     *
+     * @return string
+     * @throws \RuntimeException if unable to read or an error occurs while
+     *     reading.
+     */
+    public function getContents(): string
+    {
+        if (
+            !$this->isReadable() ||
+            ($contents = stream_get_contents($this->handle)) === false
+        ) {
+            throw new RuntimeException('Could not get contents of stream.');
+        }
+        return $contents;
+    }
+
+    /**
+     * Returns whether or not the stream is readable.
+     *
+     * @return bool
+     */
+    public function isReadable(): bool
+    {
+        $mode = $this->getMetadata('mode');
+        $readeble = array_filter(self::$modes['readable'],
+            function ($v) use ($mode) {
+                return stripos($mode, $v) !== false;
+            }, ARRAY_FILTER_USE_BOTH);
+        return !empty($readeble);
     }
 
     /**
@@ -138,7 +224,7 @@ class Stream implements StreamInterface
     {
         if (($position = ftell($this->handle)) === false || $this->pipe) {
             throw new RuntimeException('Could not get the '
-            . 'position of the pointer in stream');
+                . 'position of the pointer in stream');
         }
         return $position;
     }
@@ -151,18 +237,6 @@ class Stream implements StreamInterface
     public function eof(): bool
     {
         return feof($this->handle);
-    }
-
-    /**
-     * Returns whether or not the stream is seekable.
-     *
-     * @return bool
-     */
-    public function isSeekable()
-    {
-        $mode = $this->getMetadata('seekable');
-
-        return $mode ?? false;
     }
 
     /**
@@ -180,46 +254,11 @@ class Stream implements StreamInterface
     public function seek($offset, $whence = SEEK_SET)
     {
         if (
-                !$this->isSeekable() ||
-                fseek($this->handle, (int) $offset, (int) $whence) === -1
+            !$this->isSeekable() ||
+            fseek($this->handle, (int)$offset, (int)$whence) === -1
         ) {
             throw new RuntimeException('Could not seek in stream');
         }
-    }
-
-    /**
-     * Seek to the beginning of the stream.
-     *
-     * If the stream is not seekable, this method will raise an exception;
-     * otherwise, it will perform a seek(0).
-     *
-     * @see seek()
-     * @link http://www.php.net/manual/en/function.fseek.php
-     * @throws \RuntimeException on failure.
-     */
-    public function rewind()
-    {
-        if (
-                !$this->isSeekable() ||
-                rewind($this->handle) === false
-        ) {
-            throw new RuntimeException('Could not rewind stream');
-        }
-    }
-
-    /**
-     * Returns whether or not the stream is writable.
-     *
-     * @return bool
-     */
-    public function isWritable(): bool
-    {
-        $mode = $this->getMetadata('mode');
-        $writable = array_filter(self::$modes['writable'],
-                function($v) use ($mode) {
-            return stripos($mode, $v) !== false;
-        }, ARRAY_FILTER_USE_BOTH);
-        return !empty($writable);
     }
 
     /**
@@ -232,8 +271,8 @@ class Stream implements StreamInterface
     public function write($string): int
     {
         if (
-                !$this->isWritable() ||
-                ($written = fwrite($this->handle, (string) $string)) === false
+            !$this->isWritable() ||
+            ($written = fwrite($this->handle, (string)$string)) === false
         ) {
             throw new RuntimeException('Could not write to stream');
         }
@@ -241,18 +280,18 @@ class Stream implements StreamInterface
     }
 
     /**
-     * Returns whether or not the stream is readable.
+     * Returns whether or not the stream is writable.
      *
      * @return bool
      */
-    public function isReadable(): bool
+    public function isWritable(): bool
     {
         $mode = $this->getMetadata('mode');
-        $readeble = array_filter(self::$modes['readable'],
-                function($v) use ($mode) {
-            return stripos($mode, $v) !== false;
-        }, ARRAY_FILTER_USE_BOTH);
-        return !empty($readeble);
+        $writable = array_filter(self::$modes['writable'],
+            function ($v) use ($mode) {
+                return stripos($mode, $v) !== false;
+            }, ARRAY_FILTER_USE_BOTH);
+        return !empty($writable);
     }
 
     /**
@@ -268,51 +307,12 @@ class Stream implements StreamInterface
     public function read($length): string
     {
         if (
-                !$this->isReadable() ||
-                ($data = fread($this->handle, (int) $length)) === false
+            !$this->isReadable() ||
+            ($data = fread($this->handle, (int)$length)) === false
         ) {
             throw new RuntimeException('Could not read from stream');
         }
         return $data;
-    }
-
-    /**
-     * Returns the remaining contents in a string
-     *
-     * @return string
-     * @throws \RuntimeException if unable to read or an error occurs while
-     *     reading.
-     */
-    public function getContents(): string
-    {
-        if (
-                !$this->isReadable() ||
-                ($contents = stream_get_contents($this->handle)) === false
-        ) {
-            throw new RuntimeException('Could not get contents of stream.');
-        }
-        return $contents;
-    }
-
-    /**
-     * Get stream metadata as an associative array or retrieve a specific key.
-     *
-     * The keys returned are identical to the keys returned from PHP's
-     * stream_get_meta_data() function.
-     *
-     * @link http://php.net/manual/en/function.stream-get-meta-data.php
-     * @param string $key Specific metadata to retrieve.
-     * @return array|mixed|null Returns an associative array if no key is
-     *     provided. Returns a specific key value if a key is provided and the
-     *     value is found, or null if the key is not found.
-     */
-    public function getMetadata($key = null)
-    {
-        $meta = stream_get_meta_data($this->handle);
-        if (is_null($key) === true) {
-            return $meta;
-        }
-        return $meta[(string) $key] ?? null;
     }
 
 }

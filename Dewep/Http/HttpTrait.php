@@ -10,9 +10,8 @@ trait HttpTrait
 {
 
     /**
-     *
-     * @param type $key
-     * @return type
+     * @param $key
+     * @return bool|string
      */
     protected function normalizeKey($key)
     {
@@ -23,6 +22,10 @@ trait HttpTrait
         return $key;
     }
 
+    /**
+     * @param $key
+     * @return mixed
+     */
     protected function originalKey($key)
     {
         if (stripos($key, 'HTTP_') === 0) {

@@ -45,7 +45,6 @@ class Config extends Registry
     const STORAGE_DIR = 'storage';
 
     /**
-     *
      * @param array $config
      */
     final public static function append(array $config)
@@ -54,8 +53,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @param string $file
+     * @throws Exception\FileException
      */
     final public static function fromYaml(string $file)
     {
@@ -64,8 +63,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirRoot(): string
     {
@@ -83,8 +82,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirData(): string
     {
@@ -92,8 +91,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirDb(): string
     {
@@ -101,8 +100,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirSrc(): string
     {
@@ -110,8 +109,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirTemp(): string
     {
@@ -119,8 +118,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirView(): string
     {
@@ -128,8 +127,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirWww(): string
     {
@@ -137,8 +136,8 @@ class Config extends Registry
     }
 
     /**
-     *
      * @return string
+     * @throws Exception\RuntimeException
      */
     final public static function dirStorage(): string
     {
@@ -146,7 +145,7 @@ class Config extends Registry
     }
 
     /**
-     *
+     * @throws Exception\RuntimeException
      */
     final public static function makeSysFolders()
     {

@@ -1,38 +1,28 @@
-# логирование
-debug: true 
+debug: true
 
-# формат ответа из стандартных фариантов
 response: json
-# формат ответа с использованием заголовка и своего обработчика
-#response:
-#    head: application/json; charset=UTF-8'
-#    handler: Dewep\Parsers\Response::json
 
-
-# роуты
 routes:
-# ссылка с поддержкой атрибут - /{user}/name
-    /:
-# метод запроса через запятую [CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE]: обработчик в формате КЛАСС::метод
-        GET: Dewep\Demo::demo
-        
-        
+  /:
+    GET: Dewep\Demo::demo
+
 middleware:
-    request:
-        
-    response:
-        
-        
+  request:
+    - Dewep\Middleware\Auth
+  response:
+    - Dewep\Middleware\Debug
+
+
 providers:
-    logger: Dewep\Providers\LoggerProvider
-    mysql: Dewep\Providers\MysqlProvider
-    
-    
-    
+  logger: Dewep\Providers\LoggerProvider
+  mysql: Dewep\Providers\MysqlProvider
+
+
+
 mysql:
-    host: localhost
-    port: 3306
-    dbname: default
-    login: default
-    password: default
+  host: localhost
+  port: 3306
+  dbname: default
+  login: default
+  password: default
     

@@ -8,8 +8,6 @@ use Monolog\Handler\StreamHandler;
 use Dewep\Config;
 
 /**
- * Description of LoggerProvider
- *
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
 class LoggerProvider implements ProviderInterface

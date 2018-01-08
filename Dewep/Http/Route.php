@@ -2,10 +2,9 @@
 
 namespace Dewep\Http;
 
-use Dewep\Http\HeaderType;
-use FastRoute\RouteCollector;
-use FastRoute\Dispatcher;
 use Dewep\Exception\HttpException;
+use FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
 
 /**
  * Fast-Route
@@ -51,7 +50,7 @@ class Route
     public function bind(): Route
     {
         $routes = $this->routes;
-        $dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $r) use ($routes) {
+        $dispatcher = \FastRoute\simpleDispatcher(function (RouteCollector $r) use ($routes) {
             foreach ($routes as $uri => $route) {
                 foreach ($route as $method => $handler) {
                     $method = explode(',', $method);
@@ -61,7 +60,7 @@ class Route
         });
 
         $httpMethod = $this->headers->getServerParam(HeaderType::REQUEST_METHOD,
-                'GET');
+            'GET');
         $uri = $this->headers->getServerParam(HeaderType::REQUEST_URI, '/');
 
         $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
@@ -78,16 +77,15 @@ class Route
 
         if (!empty($this->result[2])) {
             $this->result[2] = array_map([$this, 'normalizeKey'],
-                    $this->result[2]);
+                $this->result[2]);
         }
 
         return $this;
     }
 
     /**
-     *
-     * @param type $name
-     * @param type $default
+     * @param string $name
+     * @param null $default
      * @return array
      */
     public function getAttribute(string $name, $default = null): array
@@ -97,9 +95,8 @@ class Route
     }
 
     /**
-     *
      * @param string $name
-     * @param type $value
+     * @param $value
      */
     public function setAttribute(string $name, $value)
     {
@@ -107,7 +104,6 @@ class Route
     }
 
     /**
-     *
      * @param string $name
      */
     public function removeAttribute(string $name)
@@ -116,7 +112,6 @@ class Route
     }
 
     /**
-     *
      * @return array
      */
     public function getAttributes(): array
@@ -125,8 +120,8 @@ class Route
     }
 
     /**
-     *
-     * @return type
+     * @return mixed
+     * @throws HttpException
      */
     public function getHandler()
     {

@@ -2,11 +2,11 @@
 
 namespace Dewep\Http;
 
-use Psr\Http\Message\ResponseInterface;
-use Dewep\Exception\InvalidArgumentException;
-use Dewep\Exception\HttpException;
-use Dewep\Parsers\Response as Resp;
 use Dewep\Config;
+use Dewep\Exception\HttpException;
+use Dewep\Exception\InvalidArgumentException;
+use Dewep\Parsers\Response as Resp;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Representation of an outgoing, server-side response.
@@ -103,24 +103,13 @@ class Response extends Message implements ResponseInterface
     protected $reasonPhrase = '';
 
     /**
-     *
-     * @return \Dewep\Http\Response
-     */
-    public static function bootstrap(): Response
-    {
-        $headers = new Headers([], $_COOKIE);
-        $body = new Stream(fopen('php://temp', 'r+'));
-
-        return new static(200, $headers, $body);
-    }
-
-    /**
-     *
-     * @param \Dewep\Http\Headers $headers
-     * @param \Dewep\Http\StreamInterface $body
+     * Response constructor.
+     * @param int $status
+     * @param Headers $headers
+     * @param Stream $body
      */
     public function __construct(int $status = 200, Headers $headers,
-            Stream $body)
+                                Stream $body)
     {
         $this->status = $status;
         $this->headers = $headers;
@@ -128,16 +117,14 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Gets the response status code.
-     *
-     * The status code is a 3-digit integer result code of the server's attempt
-     * to understand and satisfy the request.
-     *
-     * @return int Status code.
+     * @return Response
      */
-    public function getStatusCode(): int
+    public static function bootstrap(): Response
     {
-        return $this->status;
+        $headers = new Headers([], $_COOKIE);
+        $body = new Stream(fopen('php://temp', 'r+'));
+
+        return new static(200, $headers, $body);
     }
 
     /**
@@ -178,33 +165,8 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Gets the response reason phrase associated with the status code.
-     *
-     * Because a reason phrase is not a required element in a response
-     * status line, the reason phrase value MAY be null. Implementations MAY
-     * choose to return the default RFC 7231 recommended reason phrase (or those
-     * listed in the IANA HTTP Status Code Registry) for the response's
-     * status code.
-     *
-     * @link http://tools.ietf.org/html/rfc7231#section-6
-     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-     * @return string Reason phrase; must return an empty string if none present.
-     */
-    public function getReasonPhrase()
-    {
-        if (!is_null($this->reasonPhrase)) {
-            return $this->reasonPhrase;
-        }
-        if (isset(static::$messages[$this->status])) {
-            return static::$messages[$this->status];
-        }
-        return '';
-    }
-
-    /**
-     *
-     * @param type $body
-     * @return \Dewep\Http\Response
+     * @param $body
+     * @return Response
      * @throws HttpException
      */
     public function setBody($body): Response
@@ -244,14 +206,13 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     *
      * @return string
      */
     public function __toString(): string
     {
         $http = sprintf(
-                'HTTP/%s %s %s', $this->getProtocolVersion(),
-                $this->getStatusCode(), $this->getReasonPhrase()
+            'HTTP/%s %s %s', $this->getProtocolVersion(),
+            $this->getStatusCode(), $this->getReasonPhrase()
         );
         header($http, true);
 
@@ -259,7 +220,44 @@ class Response extends Message implements ResponseInterface
             $line = sprintf('%s: %s', $name, $this->getHeaderLine($name));
             header($line, true);
         }
-        return (string) $this->getBody();
+        return (string)$this->getBody();
+    }
+
+    /**
+     * Gets the response status code.
+     *
+     * The status code is a 3-digit integer result code of the server's attempt
+     * to understand and satisfy the request.
+     *
+     * @return int Status code.
+     */
+    public function getStatusCode(): int
+    {
+        return $this->status;
+    }
+
+    /**
+     * Gets the response reason phrase associated with the status code.
+     *
+     * Because a reason phrase is not a required element in a response
+     * status line, the reason phrase value MAY be null. Implementations MAY
+     * choose to return the default RFC 7231 recommended reason phrase (or those
+     * listed in the IANA HTTP Status Code Registry) for the response's
+     * status code.
+     *
+     * @link http://tools.ietf.org/html/rfc7231#section-6
+     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     * @return string Reason phrase; must return an empty string if none present.
+     */
+    public function getReasonPhrase()
+    {
+        if (!is_null($this->reasonPhrase)) {
+            return $this->reasonPhrase;
+        }
+        if (isset(static::$messages[$this->status])) {
+            return static::$messages[$this->status];
+        }
+        return '';
     }
 
 }

@@ -1,15 +1,25 @@
-nbproject/
-.DS_Store
+############################################
+syntax: regexp
 
-.hg/
-.hgignore
-.hgsigs
-.hgsub
-.hgsubstate
-.hgtags
 
-composer.phar
-vendor/
+############################################
+syntax: glob
 
 .idea/
-composer.lock
+.settings/
+.project
+nbproject/
+
+.cache/
+temp/
+
+node_modules/
+vendor/
+
+*.lock
+*.phar
+
+.DS_Store
+
+.hg*
+.hg/

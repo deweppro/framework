@@ -23,7 +23,6 @@ class Response
     const HTTP_HTML = 'text/html; charset=UTF-8';
 
     /**
-     *
      * @param array $body
      * @return string
      */
@@ -33,19 +32,6 @@ class Response
     }
 
     /**
-     *
-     * @param array $body
-     * @return string
-     */
-    public static function xml(array $body, string $root = '<root/>'): string
-    {
-        $xml = new \SimpleXMLElement($root);
-        array_walk_recursive($body, array($xml, 'addChild'));
-        return $xml->asXML();
-    }
-
-    /**
-     *
      * @param array $body
      * @return string
      */
@@ -57,6 +43,22 @@ class Response
         return $doc->saveHTML();
     }
 
+    /**
+     * @param array $body
+     * @param string $root
+     * @return string
+     */
+    public static function xml(array $body, string $root = '<root/>'): string
+    {
+        $xml = new \SimpleXMLElement($root);
+        array_walk_recursive($body, array($xml, 'addChild'));
+        return $xml->asXML();
+    }
+
+    /**
+     * @param $body
+     * @return mixed
+     */
     public static function other($body)
     {
         return $body;
