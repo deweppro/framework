@@ -1,7 +1,12 @@
 {
     "name": "deweppro/framework",
     "description": "RESTFul API framework",
-    "keywords": ["framework","micro","api","router"],
+    "keywords": [
+        "framework",
+        "micro",
+        "api",
+        "router"
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -20,7 +25,7 @@
         "psr/log": "^1.0",
         "monolog/monolog": "^1.0",
         "symfony/yaml": "^3.3",
-      "deweppro/http": "^1.0.0",
+        "deweppro/http": "^1.0.0",
         "deweppro/db": "^1.0.0",
         "deweppro/client": "^1.0.0"
     }
