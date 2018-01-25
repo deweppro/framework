@@ -17,11 +17,10 @@
     },
     "require": {
         "php": ">=7.0.0",
-        "psr/http-message": "^1.0",
         "psr/log": "^1.0",
         "monolog/monolog": "^1.0",
-        "nikic/fast-route": "^1.2",
         "symfony/yaml": "^3.3",
+      "deweppro/http": "^1.0.0",
         "deweppro/db": "^1.0.0",
         "deweppro/client": "^1.0.0"
     }
