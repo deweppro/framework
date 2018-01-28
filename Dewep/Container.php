@@ -3,7 +3,6 @@
 namespace Dewep;
 
 use Dewep\Patterns\Registry;
-use Dewep\Config;
 
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
@@ -12,12 +11,8 @@ class Container extends Registry
 {
 
     /**
-     * Можно передать:
-     * - замыкание
-     * - объект
-     * - строку для вызыва функции
-     * @param string $key
-     * @param type $value
+     * @param $value
+     * @return mixed
      */
     protected static function value($value)
     {
@@ -33,9 +28,8 @@ class Container extends Registry
     }
 
     /**
-     *
      * @param string $key
-     * @return type
+     * @return mixed|null
      */
     protected static function autoload(string $key)
     {
@@ -47,9 +41,8 @@ class Container extends Registry
     }
 
     /**
-     *
      * @param string $key
-     * @param type $value
+     * @param $value
      */
     public static function exist(string $key, $value)
     {
@@ -59,10 +52,9 @@ class Container extends Registry
     }
 
     /**
-     *
      * @param string $key
-     * @param type $default
-     * @return type
+     * @param null $default
+     * @return mixed|null
      */
     public static function get(string $key, $default = null)
     {
@@ -76,9 +68,8 @@ class Container extends Registry
     }
 
     /**
-     *
      * @param string $key
-     * @return type
+     * @return bool
      */
     public static function has(string $key)
     {
@@ -95,7 +86,6 @@ class Container extends Registry
     }
 
     /**
-     *
      * @return array
      */
     public static function all(): array

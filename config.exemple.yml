@@ -8,9 +8,12 @@ routes:
 
 middleware:
   request:
-    - Dewep\Middleware\Auth
+    Dewep\Middleware\Auth:
+      cookie: x-token
+
   response:
-    - Dewep\Middleware\Debug
+    Dewep\Middleware\Debug:
+      name: app.log
 
 
 providers:

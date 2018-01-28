@@ -6,13 +6,13 @@ use Dewep\Config;
 use Dewep\Container;
 
 /**
- * Description of Error
- *
  * @author Mikhail Knyazhev <markus621@gmail.com>
  */
 class Error
 {
-
+    /**
+     * Loader processing errors
+     */
     public static function bootstrap()
     {
         set_error_handler('\\Dewep\\Handlers\\Error::error');
@@ -23,17 +23,15 @@ class Error
     }
 
     /**
-     *
-     * @param type $errno
-     * @param type $errstr
-     * @param type $errfile
-     * @param type $errline
-     * @return type
+     * @param $errno
+     * @param $errstr
+     * @param $errfile
+     * @param $errline
      */
     public static function error($errno, $errstr, $errfile, $errline)
     {
         if (0 == error_reporting()) {
-            return;
+            return false;
         }
         $errtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
 
@@ -41,12 +39,11 @@ class Error
     }
 
     /**
-     *
-     * @param type $no
-     * @param type $str
-     * @param type $file
-     * @param type $line
-     * @param type $trace
+     * @param $no
+     * @param $str
+     * @param $file
+     * @param $line
+     * @param array $trace
      */
     private static function build($no, $str, $file, $line, $trace = [])
     {
@@ -54,7 +51,7 @@ class Error
 
         $response = [
             'errorMessage' => $str,
-            'errorCode' => $no
+            'errorCode' => $no,
         ];
 
         $file = explode('/', $file);
@@ -64,22 +61,25 @@ class Error
         Container::get('logger')->error("{$no}: {$str} in {$file}:{$line}", $trace);
 
         if ($debug) {
-            $response['errorFile'] = $file . ':' . $line;
+            $response['errorFile'] = $file.':'.$line;
         }
 
-        echo Container::get('response')->setBody($response);
+        echo Container::get('response')->setBody($response, Config::get('response'));
         die;
     }
 
     /**
-     *
      * @param \Throwable $e
-     * @return type
      */
     public static function exception(\Throwable $e)
     {
-        return self::build($e->getCode(), $e->getMessage(), $e->getFile(),
-            $e->getLine(), $e->getTrace());
+        return self::build(
+            $e->getCode(),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTrace()
+        );
     }
 
 }

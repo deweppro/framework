@@ -2,11 +2,11 @@
 
 namespace Dewep;
 
+use Dewep\Exception\RuntimeException;
+use Dewep\Handlers\Error;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
-use Dewep\Handlers\Error;
 use Dewep\Middleware\Builder as MB;
-use Dewep\Exception\RuntimeException;
 
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
@@ -15,7 +15,6 @@ class Application
 {
 
     /**
-     * Application constructor.
      * @param string $configFilePath
      * @throws Exception\FileException
      * @throws RuntimeException
@@ -25,8 +24,8 @@ class Application
         Config::makeSysFolders();
 
         if (
-                !file_exists($configFilePath) ||
-                !is_readable($configFilePath)
+            !file_exists($configFilePath) ||
+            !is_readable($configFilePath)
         ) {
             throw new RuntimeException('Config file not found!');
         }
@@ -36,8 +35,7 @@ class Application
     }
 
     /**
-     * @throws Exception\HttpException
-     * @throws Patterns\RuntimeException
+     * @throws \Exception
      */
     public function bootstrap()
     {
@@ -46,7 +44,7 @@ class Application
         $response = Response::bootstrap();
         Container::set('response', $response);
 
-        $request = Request::bootstrap();
+        $request = Request::bootstrap(Config::get('routes', []));
         Container::set('request', $request);
 
         $middleware = Config::get('middleware', []);
@@ -54,7 +52,11 @@ class Application
         MB::makes($middleware['request'] ?? [], $request, $response);
 
         $content = $this->getApplication($request, $response);
-        $response = $response->setBody($content);
+        if ($content instanceof Response) {
+            $response = $content;
+        } else {
+            $response = $response->setBody($content, Config::get('response'));
+        }
 
         MB::makes($middleware['response'] ?? [], $request, $response);
 
@@ -72,16 +74,17 @@ class Application
      * @param Request $request
      * @param Response $response
      * @return mixed
-     * @throws Exception\HttpException
+     * @throws \Exception
      */
     private function getApplication(Request $request, Response $response)
     {
-        $attributes = $request->getAttributes();
-        $heandler = $request->route->getHandler();
+        $attributes = $request->route->getAttributes();
+        $heandler   = $request->route->getHandler();
 
         list($class, $method) = explode('::', $heandler, 2);
 
         $object = new $class($request, $response);
+
         return call_user_func_array([$object, $method], $attributes);
     }
 

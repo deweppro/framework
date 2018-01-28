@@ -27,6 +27,7 @@
         "symfony/yaml": "^3.3",
         "deweppro/http": "^1.0.0",
         "deweppro/db": "^1.0.0",
-        "deweppro/client": "^1.0.0"
+        "deweppro/client": "^1.0.0",
+        "deweppro/patterns": "^1.0.0"
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Dewep\Providers;
 
-use Dewep\Interfaces\ProviderInterface;
 use Dewep\Config;
+use Dewep\Interfaces\ProviderInterface;
 use Dewep\Mysql;
 
 /**
@@ -11,13 +11,20 @@ use Dewep\Mysql;
  */
 class MysqlProvider implements ProviderInterface
 {
-
-    public static function handle()
+    /**
+     * @return Mysql
+     */
+    public function handle()
     {
         $config = Config::get('mysql', []);
-        return new Mysql($config['host'] ?? 'localhost',
-                $config['port'] ?? 3306, $config['dbname'] ?? 'default',
-                $config['login'] ?? '', $config['password'] ?? '');
+
+        return new Mysql(
+            $config['host'] ?? 'localhost',
+            $config['port'] ?? 3306,
+            $config['dbname'] ?? 'default',
+            $config['login'] ?? '',
+            $config['password'] ?? ''
+        );
     }
 
 }

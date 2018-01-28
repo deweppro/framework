@@ -10,23 +10,27 @@ use Symfony\Component\Yaml\Yaml as Y;
  */
 class Yaml
 {
-
-    public static function read(string $path, string $tempDir = null)
+    /**
+     * @param string $path
+     * @param string|null $tempDir
+     * @return array
+     * @throws FileException
+     */
+    public static function read(string $path, string $tempDir = null): array
     {
         $tempDir = $tempDir ?? sys_get_temp_dir();
-        $yaml = [];
         if (is_file($path) && is_readable($path)) {
-            $tempFileName = $tempDir . '/' . hash('md5',
-                    $path . ':' . filectime($path)) . '.yml.json';
+            $tempFileName = self::getTempFileName($path, $tempDir);
 
             if (file_exists($tempFileName)) {
-                $yaml = json_decode(file_get_contents($tempFileName), true);
+                $yaml = include $tempFileName;
             } else {
                 $yaml = Y::parse(file_get_contents($path));
                 if (is_writeable($tempDir)) {
-                    file_put_contents($tempFileName,
-                        json_encode($yaml,
-                            JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                    file_put_contents(
+                        $tempFileName,
+                        '<?php return '.var_export($yaml, true).';'
+                    );
                 }
             }
 
@@ -34,9 +38,20 @@ class Yaml
                 $yaml = [];
             }
         } else {
-            throw new FileException($path . ' is not found or cannot be read.');
+            throw new FileException($path.' is not found or cannot be read.');
         }
+
         return $yaml;
+    }
+
+    /**
+     * @param string $path
+     * @param string $tempDir
+     * @return string
+     */
+    protected static function getTempFileName(string $path, string $tempDir): string
+    {
+        return $tempDir.'/'.hash('md5', $path.':'.filectime($path)).'.yml.php';
     }
 
 }

@@ -2,8 +2,8 @@
 
 namespace Dewep\Middleware;
 
-use Psr\Http\Message\ResponseInterface as Res;
-use Psr\Http\Message\ServerRequestInterface as Req;
+use Dewep\Http\Request;
+use Dewep\Http\Response;
 
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
@@ -11,19 +11,49 @@ use Psr\Http\Message\ServerRequestInterface as Req;
 class Builder
 {
 
-    public static function makes(array $middlewares, Req $request, Res $response)
-    {
+    /**
+     * @param array $middlewares
+     * @param Request $request
+     * @param Response $response
+     * @param string|null $default
+     */
+    public static function makes(
+        array $middlewares,
+        Request $request,
+        Response $response,
+        string $default = null
+    ) {
         if (!empty($middlewares)) {
             foreach ($middlewares as $middleware) {
-                call_user_func_array([$middleware, 'handle'],
-                    [&$request, &$response]);
+                self::make($middleware, $request, $response, $default);
             }
         }
     }
 
-    public static function make(string $middleware, Req $request, Res $response)
-    {
-        return call_user_func_array($middleware, [&$request, &$response]);
+    /**
+     * @param string $middleware
+     * @param Request $request
+     * @param Response $response
+     * @param string|null $default
+     * @return mixed
+     */
+    public static function make(
+        string $middleware,
+        Request $request,
+        Response $response,
+        string $default = null
+    ) {
+        @list($class, $method) = explode('::', $middleware);
+
+        $obj = new $class($request, $response);
+
+        $method = $method ?? $default ?? 'handle';
+
+        if (method_exists($obj, $method)) {
+            $obj->$method();
+        }
+
+        return $obj;
     }
 
 }

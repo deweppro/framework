@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Dewep\Interfaces;
 
 /**
@@ -9,5 +8,5 @@ namespace Dewep\Interfaces;
 interface ProviderInterface
 {
 
-    public static function handle();
+    public function handle();
 }

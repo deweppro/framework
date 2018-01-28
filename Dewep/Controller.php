@@ -10,31 +10,20 @@ use Dewep\Http\Response;
  */
 abstract class Controller
 {
-
-    /**
-     * @var Request
-     */
+    /** @var Request */
     protected $request;
-
-    /**
-     * @var Response
-     */
+    /** @var Response */
     protected $response;
-
-    /**
-     *
-     * @var \Monolog\Logger
-     */
+    /** @var \Monolog\Logger */
     protected $logger;
 
     /**
-     *
      * @param Request $request
      * @param Response $response
      */
     public function __construct(Request $request, Response $response)
     {
-        $this->request = $request;
+        $this->request  = $request;
         $this->response = $response;
 
         $this->logger = Container::get('logger');
