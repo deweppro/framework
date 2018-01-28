@@ -59,7 +59,10 @@ class Error
         $file = array_slice($file, count($file) - 3);
         $file = implode('/', $file);
 
-        Container::get('logger')->error("{$no}: {$str} in {$file}:{$line}", $trace);
+        Container::get('logger')->error(
+            sprintf('%s: %s in %s:%s', $no, $str, $file, $line),
+            $trace
+        );
 
         if ($debug) {
             $response['errorFile'] = $file.':'.$line;
