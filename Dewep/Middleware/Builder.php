@@ -24,14 +24,16 @@ class Builder
         string $default = null
     ) {
         if (!empty($middlewares)) {
-            foreach ($middlewares as $middleware) {
-                self::make($middleware, $request, $response, $default);
+            foreach ($middlewares as $middleware => $params) {
+
+                self::make($middleware, $params ?? [], $request, $response, $default);
             }
         }
     }
 
     /**
      * @param string $middleware
+     * @param array $params
      * @param Request $request
      * @param Response $response
      * @param string|null $default
@@ -39,13 +41,14 @@ class Builder
      */
     public static function make(
         string $middleware,
+        array $params,
         Request $request,
         Response $response,
         string $default = null
     ) {
         @list($class, $method) = explode('::', $middleware);
 
-        $obj = new $class($request, $response);
+        $obj = new $class($request, $response, $params);
 
         $method = $method ?? $default ?? 'handle';
 

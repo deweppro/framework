@@ -16,17 +16,21 @@ abstract class Controller
     protected $response;
     /** @var \Monolog\Logger */
     protected $logger;
+    /** @var array */
+    protected $params = [];
 
     /**
      * @param Request $request
      * @param Response $response
      */
-    public function __construct(Request $request, Response $response)
+    public function __construct(Request $request, Response $response, ...$params)
     {
         $this->request  = $request;
         $this->response = $response;
 
         $this->logger = Container::get('logger');
+
+        $this->params = $params;
     }
 
 }
