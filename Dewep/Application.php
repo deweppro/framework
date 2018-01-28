@@ -49,7 +49,7 @@ class Application
 
         $middleware = Config::get('middleware', []);
 
-        MB::makes($middleware['request'] ?? [], $request, $response);
+        MB::makes($middleware['request'] ?? [], $request, $response, 'requestAction');
 
         $content = $this->getApplication($request, $response);
         if ($content instanceof Response) {
@@ -58,7 +58,7 @@ class Application
             $response = $response->setBody($content, Config::get('response'));
         }
 
-        MB::makes($middleware['response'] ?? [], $request, $response);
+        MB::makes($middleware['response'] ?? [], $request, $response, 'responseAction');
 
         $err = ob_get_contents();
         ob_end_flush();
