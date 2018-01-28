@@ -27,6 +27,7 @@ class Error
      * @param $errstr
      * @param $errfile
      * @param $errline
+     * @return bool|void
      */
     public static function error($errno, $errstr, $errfile, $errline)
     {
