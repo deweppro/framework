@@ -21,7 +21,7 @@ class Application
      */
     public function __construct(string $configFilePath)
     {
-        Config::makeSysFolders();
+        //Config::makeSysFolders();
 
         if (
             !file_exists($configFilePath) ||
@@ -41,16 +41,26 @@ class Application
     {
         ob_start();
 
-        $response = Response::bootstrap();
-        Container::set('response', $response);
-
+        /**
+         * request
+         */
         $request = Request::bootstrap(Config::get('routes', []));
         Container::set('request', $request);
 
+        /**
+         * response
+         */
+        $response = Response::bootstrap();
+        Container::set('response', $response);
+
+        /**
+         * middleware
+         */
         $middleware = Config::get('middleware', []);
 
         MB::makes($middleware['request'] ?? [], $request, $response, 'requestAction');
 
+        /** @var Response $content */
         $content = $this->getApplication($request, $response);
         if ($content instanceof Response) {
             $response = $content;
@@ -63,6 +73,9 @@ class Application
         $err = ob_get_contents();
         ob_end_flush();
 
+        /**
+         * errors
+         */
         if (!empty($err)) {
             Container::get('logger')->warning($err);
         }
@@ -78,8 +91,10 @@ class Application
      */
     private function getApplication(Request $request, Response $response)
     {
+        /** @var array $attributes */
         $attributes = $request->route->getAttributes();
-        $heandler   = $request->route->getHandler();
+        /** @var string $heandler */
+        $heandler = $request->route->getHandler();
 
         list($class, $method) = explode('::', $heandler, 2);
 

@@ -13,12 +13,12 @@ use Monolog\Logger;
 class LoggerProvider implements ProviderInterface
 {
     /**
-     * @return Logger
+     * LoggerProvider constructor.
      */
-    public function handle()
+    public function __construct(Config $config)
     {
-        $debug   = Config::get('debug', false);
-        $logfile = Config::dirTemp().'/app.log';
+        $debug   = $config::get('debug', false);
+        $logfile = $config::dirTemp().'/app.log';
 
         $logger = new Logger('app');
         $logger->pushHandler(

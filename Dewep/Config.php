@@ -17,7 +17,6 @@ class Config extends Registry
     const SRC_DIR     = 'src';
     const TEMP_DIR    = 'temp';
     const VIEW_DIR    = 'view';
-    const WWW_DIR     = 'www';
     const STORAGE_DIR = 'storage';
 
     /**
@@ -76,7 +75,6 @@ class Config extends Registry
             self::dirStorage(),
             self::dirTemp(),
             self::dirView(),
-            self::dirWww(),
         ];
 
         foreach ($dirs as $dir) {
@@ -133,7 +131,7 @@ class Config extends Registry
      */
     final public static function dirWww(): string
     {
-        return self::dirRoot().'/'.self::WWW_DIR;
+        return strtr($_SERVER['DOCUMENT_ROOT'], '\\', '/');
     }
 
 }

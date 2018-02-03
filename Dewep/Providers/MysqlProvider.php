@@ -12,18 +12,19 @@ use Dewep\Mysql;
 class MysqlProvider implements ProviderInterface
 {
     /**
-     * @return Mysql
+     * MysqlProvider constructor.
+     * @param Config $config
      */
-    public function handle()
+    public function __construct(Config $config)
     {
-        $config = Config::get('mysql', []);
+        $cfg = $config::get('mysql', []);
 
         return new Mysql(
-            $config['host'] ?? 'localhost',
-            $config['port'] ?? 3306,
-            $config['dbname'] ?? 'default',
-            $config['login'] ?? '',
-            $config['password'] ?? ''
+            $cfg['host'] ?? 'localhost',
+            $cfg['port'] ?? 3306,
+            $cfg['dbname'] ?? 'default',
+            $cfg['login'] ?? '',
+            $cfg['password'] ?? ''
         );
     }
 

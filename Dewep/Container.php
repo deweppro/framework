@@ -11,36 +11,6 @@ class Container extends Registry
 {
 
     /**
-     * @param $value
-     * @return mixed
-     */
-    protected static function value($value)
-    {
-        if ($value instanceof \Closure) {
-            return $value();
-        } elseif (is_string($value)) {
-            $obj = call_user_func($value);
-            if ($obj !== false) {
-                return $obj;
-            }
-        }
-        return $value;
-    }
-
-    /**
-     * @param string $key
-     * @return mixed|null
-     */
-    protected static function autoload(string $key)
-    {
-        $providers = Config::get('providers', []);
-        if (isset($providers[$key])) {
-            return call_user_func([$providers[$key], 'handle']);
-        }
-        return null;
-    }
-
-    /**
      * @param string $key
      * @param $value
      */
@@ -69,6 +39,22 @@ class Container extends Registry
 
     /**
      * @param string $key
+     * @return mixed|null
+     */
+    protected static function autoload(string $key)
+    {
+        $providers = Config::get('providers', []);
+        if (isset($providers[$key])) {
+            $class = $providers[$key];
+
+            return new $class(Config::class);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $key
      * @return bool
      */
     public static function has(string $key)
@@ -78,11 +64,8 @@ class Container extends Registry
         }
 
         $providers = Config::get('providers', []);
-        if (isset($providers[$key])) {
-            return true;
-        }
 
-        return false;
+        return isset($providers[$key]);
     }
 
     /**
@@ -91,11 +74,29 @@ class Container extends Registry
     public static function all(): array
     {
         $exist = self::$__registry[self::__class()] ?? [];
-        $can = Config::get('providers', []);
+        $can   = Config::get('providers', []);
 
         $result = array_replace($can, $exist);
 
         return array_keys($result);
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    protected static function value($value)
+    {
+        if ($value instanceof \Closure) {
+            return $value();
+        } elseif (is_string($value)) {
+            $obj = call_user_func($value);
+            if ($obj !== false) {
+                return $obj;
+            }
+        }
+
+        return $value;
     }
 
 }
