@@ -17,15 +17,17 @@ middleware:
 
 
 providers:
-  logger: Dewep\Providers\LoggerProvider
-  mysql: Dewep\Providers\MysqlProvider
+  logger:
+    _: Dewep\Providers\LoggerProvider
+    name: app
+    filename: app.log
 
+  mysql:
+    _: Dewep\Providers\MysqlProvider
+    host: localhost
+    port: 3306
+    dbname: default
+    login: default
+    password: default
 
-
-mysql:
-  host: localhost
-  port: 3306
-  dbname: default
-  login: default
-  password: default
     

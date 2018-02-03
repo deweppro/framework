@@ -66,24 +66,18 @@ class Config extends Registry
     /**
      * @return array
      */
-    final public static function makeSysFolders(): array
+    final public static function getDirs(): array
     {
-        $dirs = [
-            self::dirData(),
-            self::dirDb(),
-            self::dirSrc(),
-            self::dirStorage(),
-            self::dirTemp(),
-            self::dirView(),
+        return [
+            'data'    => self::dirData(),
+            'db'      => self::dirDb(),
+            'src'     => self::dirSrc(),
+            'storage' => self::dirStorage(),
+            'temp'    => self::dirTemp(),
+            'view'    => self::dirView(),
+            'root'    => self::dirRoot(),
+            'www'     => self::dirWww(),
         ];
-
-        foreach ($dirs as $dir) {
-            if (!is_dir($dir)) {
-                mkdir($dir, 0777);
-            }
-        }
-
-        return $dir;
     }
 
     /**
@@ -132,6 +126,24 @@ class Config extends Registry
     final public static function dirWww(): string
     {
         return strtr($_SERVER['DOCUMENT_ROOT'], '\\', '/');
+    }
+
+    final public static function makeSysFolders(): array
+    {
+        $dirs = [
+            self::dirData(),
+            self::dirDb(),
+            self::dirSrc(),
+            self::dirStorage(),
+            self::dirTemp(),
+            self::dirView(),
+        ];
+
+        foreach ($dirs as $dir) {
+            if (!is_dir($dir)) {
+                mkdir($dir, 0777);
+            }
+        }
     }
 
 }

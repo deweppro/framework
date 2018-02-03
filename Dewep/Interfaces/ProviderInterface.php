@@ -11,7 +11,7 @@ interface ProviderInterface
 {
     /**
      * ProviderInterface constructor.
-     * @param Config $config
+     * @param array $config
      */
-    public function __construct(Config $config);
+    public function __construct(array $config);
 }

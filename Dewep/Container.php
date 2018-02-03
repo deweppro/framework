@@ -45,9 +45,11 @@ class Container extends Registry
     {
         $providers = Config::get('providers', []);
         if (isset($providers[$key])) {
-            $class = $providers[$key];
+            $config      = $providers[$key];
+            $class       = $config['_'];
+            $config['_'] = Config::getDirs();
 
-            return new $class(Config::class);
+            return new $class($config);
         }
 
         return null;

@@ -61,10 +61,21 @@ For the realization of unrelated code, use the services providers,
 which can be activated at the moment they are first accessed in your code - `Container::get('mysql')->...`
 ```yaml
 providers:
-  logger: Dewep\Providers\LoggerProvider
-  mysql: Dewep\Providers\MysqlProvider
+  logger:
+    _: Dewep\Providers\LoggerProvider
+    debug: true
+    name: app
+    filename: app.log
+
+  mysql:
+    _: Dewep\Providers\MysqlProvider
+    host: localhost
+    port: 3306
+    dbname: default
+    login: default
+    password: default
 ```
-to initialize should be method - ___constructor()_
+to initialize should be method - ___constructor(array $config)_
 Example: (new provider())
 
 ### Application framework

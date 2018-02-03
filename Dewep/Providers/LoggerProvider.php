@@ -2,7 +2,6 @@
 
 namespace Dewep\Providers;
 
-use Dewep\Config;
 use Dewep\Interfaces\ProviderInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -14,13 +13,14 @@ class LoggerProvider implements ProviderInterface
 {
     /**
      * LoggerProvider constructor.
+     * @param array $config
      */
-    public function __construct(Config $config)
+    public function __construct(array $config)
     {
-        $debug   = $config::get('debug', false);
-        $logfile = $config::dirTemp().'/app.log';
+        $debug   = $config['debug'] ?? false;
+        $logfile = ($config['_']['temp'] ?? sys_get_temp_dir()).'/app.log';
 
-        $logger = new Logger('app');
+        $logger = new Logger($config['name'] ?? 'app');
         $logger->pushHandler(
             new StreamHandler(
                 $logfile,

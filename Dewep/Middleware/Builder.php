@@ -2,6 +2,7 @@
 
 namespace Dewep\Middleware;
 
+use Dewep\Config;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
 
@@ -47,6 +48,8 @@ class Builder
         string $default = null
     ) {
         @list($class, $method) = explode('::', $middleware);
+
+        $params['_'] = Config::getDirs();
 
         $obj = new $class($request, $response, $params);
 
