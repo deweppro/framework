@@ -11,28 +11,42 @@ use Monolog\Logger;
  */
 class LoggerProvider implements ProviderInterface
 {
+    /** @var bool */
+    private $debug;
+    /** @var string */
+    private $logfile;
+    /** @var string */
+    private $appname;
+
     /**
      * LoggerProvider constructor.
      * @param array $config
      */
     public function __construct(array $config)
     {
-        $debug   = $config['debug'] ?? false;
-        $logfile = sprintf(
+        $this->debug   = !empty($config['debug'] ?? false);
+        $this->logfile = sprintf(
             '%s/%s',
             $config['_']['temp'] ?? sys_get_temp_dir(),
             $config['filename'] ?? 'app.log'
         );
 
-        $logger = new Logger($config['name'] ?? 'app');
+        $this->appname = (string)($config['name'] ?? 'app');
+    }
+
+    /**
+     * @return Logger
+     */
+    public function handler(): Logger
+    {
+        $logger = new Logger($this->appname);
         $logger->pushHandler(
             new StreamHandler(
-                $logfile,
-                $debug ? Logger::DEBUG : Logger::INFO
+                $this->logfile,
+                $this->debug ? Logger::DEBUG : Logger::INFO
             )
         );
 
         return $logger;
     }
-
 }
