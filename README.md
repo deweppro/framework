@@ -75,9 +75,8 @@ providers:
     login: default
     password: default
 ```
-to initialize should be method - ___constructor(array $config)_
-Example: (new provider())
-
+to initialize should be method - ___constructor(array $config)_ and _handler_
+Example: `(new provider($config))->handler()`
 ### Application framework
 
 ```bash
