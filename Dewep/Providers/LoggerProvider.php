@@ -18,7 +18,11 @@ class LoggerProvider implements ProviderInterface
     public function __construct(array $config)
     {
         $debug   = $config['debug'] ?? false;
-        $logfile = ($config['_']['temp'] ?? sys_get_temp_dir()).'/app.log';
+        $logfile = sprintf(
+            '%s/%s',
+            $config['_']['temp'] ?? sys_get_temp_dir(),
+            $config['filename'] ?? 'app.log'
+        );
 
         $logger = new Logger($config['name'] ?? 'app');
         $logger->pushHandler(

@@ -19,6 +19,7 @@ middleware:
 providers:
   logger:
     _: Dewep\Providers\LoggerProvider
+    debug: true
     name: app
     filename: app.log
 
