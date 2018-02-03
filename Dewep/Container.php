@@ -2,6 +2,7 @@
 
 namespace Dewep;
 
+use Dewep\Interfaces\ProviderInterface;
 use Dewep\Patterns\Registry;
 
 /**
@@ -39,17 +40,18 @@ class Container extends Registry
 
     /**
      * @param string $key
-     * @return mixed|null
+     * @return null|ProviderInterface
      */
     protected static function autoload(string $key)
     {
         $providers = Config::get('providers', []);
+
         if (isset($providers[$key])) {
             $config      = $providers[$key];
             $class       = $config['_'];
             $config['_'] = Config::getDirs();
 
-            return new $class($config);
+            return (new $class($config))->handler();
         }
 
         return null;
