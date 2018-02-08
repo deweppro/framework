@@ -72,10 +72,10 @@ class Error
             $response['errorFile'] = $file.':'.$line;
         }
 
-        /** @var Response $response */
-        $response = Container::get('response');
+        /** @var Response $res */
+        $res = Container::get('response');
 
-        echo $response
+        echo $res
             ->setBody($response, Config::get('response'))
             ->setStatusCode($httpCode ?? 500);
         die;
