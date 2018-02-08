@@ -42,16 +42,16 @@ class Application
         ob_start();
 
         /**
-         * request
-         */
-        $request = Request::bootstrap(Config::get('routes', []));
-        Container::set('request', $request);
-
-        /**
          * response
          */
         $response = Response::bootstrap();
         Container::set('response', $response);
+
+        /**
+         * request
+         */
+        $request = Request::bootstrap(Config::get('routes', []));
+        Container::set('request', $request);
 
         /**
          * middleware
