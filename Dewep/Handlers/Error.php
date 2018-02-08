@@ -4,6 +4,8 @@ namespace Dewep\Handlers;
 
 use Dewep\Config;
 use Dewep\Container;
+use Dewep\Exception\HttpException;
+use Dewep\Http\Response;
 
 /**
  * @author Mikhail Knyazhev <markus621@gmail.com>
@@ -45,14 +47,16 @@ class Error
      * @param $file
      * @param $line
      * @param array $trace
+     * @param int $httpCode
+     * @throws \Exception
      */
-    private static function build($no, $str, $file, $line, $trace = [])
+    private static function build($no, $str, $file, $line, $trace = [], int $httpCode = 500)
     {
         $debug = Config::get('debug', false);
 
         $response = [
             'errorMessage' => $str,
-            'errorCode' => $no,
+            'errorCode'    => $no,
         ];
 
         $file = explode('/', $file);
@@ -68,21 +72,34 @@ class Error
             $response['errorFile'] = $file.':'.$line;
         }
 
-        echo Container::get('response')->setBody($response, Config::get('response'));
+        /** @var Response $response */
+        $response = Container::get('response');
+
+        echo $response
+            ->setBody($response, Config::get('response'))
+            ->setStatusCode($httpCode ?? 500);
         die;
     }
 
     /**
      * @param \Throwable $e
+     * @throws \Exception
      */
     public static function exception(\Throwable $e)
     {
+        $code = 500;
+
+        if ($e instanceof HttpException) {
+            $code = $e->getCode();
+        }
+
         return self::build(
             $e->getCode(),
             $e->getMessage(),
             $e->getFile(),
             $e->getLine(),
-            $e->getTrace()
+            $e->getTrace(),
+            $code
         );
     }
 
