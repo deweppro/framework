@@ -13,6 +13,14 @@ use Dewep\Middleware\Builder as MB;
  */
 class Application
 {
+    protected static $allowHeaders = [
+        'User-Agent'        => null,
+        'X-Requested-With'  => null,
+        'If-Modified-Since' => null,
+        'Cache-Control'     => null,
+        'Content-Type'      => null,
+        'Range'             => null,
+    ];
 
     /**
      * @param string $configFilePath
@@ -32,6 +40,39 @@ class Application
         Config::fromYaml($configFilePath);
 
         Error::bootstrap();
+    }
+
+    /**
+     * @param array $allowHeaders
+     */
+    public static function fixOptionsRequest(array $allowHeaders = [])
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+
+            $headers = [
+                'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
+                'Access-Control-Allow-Methods'     => 'GET, POST, PUT, DELETE, OPTIONS',
+                'Access-Control-Max-Age'           => 0,
+                'Access-Control-Allow-Credentials' => 'true',
+                'Access-Control-Allow-Headers'     => implode(
+                    ', ',
+                    array_replace(
+                        array_values($allowHeaders),
+                        static::allowHeaders
+                    )
+                ),
+                'Cache-Control'                    => 'no-cache',
+                'Pragma'                           => 'no-cache',
+            ];
+
+            foreach ($headers as $key => $value) {
+                header(sprintf('%s: %s', $key, $value), true);
+            }
+
+            http_send_status(204);
+
+            exit(0);
+        }
     }
 
     /**
