@@ -44,12 +44,9 @@ class Config extends Registry
     {
         $root = self::get(self::ROOT_DIR);
         if (empty($root)) {
-            $root      = strtr($_SERVER['DOCUMENT_ROOT'], '\\', '/');
-            $root      = trim($root, '/');
-            $rootArray = explode('/', $root);
-            $rootArray = array_slice($rootArray, 0, -1);
-            $root      = implode('/', $rootArray);
-            self::set(self::ROOT_DIR, "/{$root}");
+            $root = strtr($_SERVER['DOCUMENT_ROOT'], '\\', '/');
+            $root = dirname($root, 1);
+            self::set(self::ROOT_DIR, $root);
         }
 
         return self::get(self::ROOT_DIR);
