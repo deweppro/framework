@@ -43,22 +43,26 @@ class Application
     }
 
     /**
-     * @param array $allowHeaders
+     *
      */
-    public static function fixOptionsRequest(array $allowHeaders = [])
+    public static function fixOptionsRequest()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+
+            $allowHeaders = Config::get('allowHeaders', []);
 
             $headers = [
                 'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
                 'Access-Control-Allow-Methods'     => 'GET, POST, PUT, DELETE, OPTIONS',
                 'Access-Control-Max-Age'           => 0,
                 'Access-Control-Allow-Credentials' => 'true',
-                'Access-Control-Allow-Headers'     => implode(
+                'Access-Control-Allow-Headers'    => implode(
                     ', ',
-                    array_replace(
-                        array_values($allowHeaders),
-                        static::$allowHeaders
+                    array_keys(
+                        array_replace(
+                            array_flip($allowHeaders),
+                            static::$allowHeaders
+                        )
                     )
                 ),
                 'Cache-Control'                    => 'no-cache',
