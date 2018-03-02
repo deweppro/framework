@@ -2,6 +2,7 @@
 
 namespace Dewep;
 
+use Dewep\Exception\RuntimeException;
 use Dewep\Parsers\Yaml;
 use Dewep\Patterns\Registry;
 
@@ -22,9 +23,16 @@ class Config extends Registry
     /**
      * @param string $file
      * @throws Exception\FileException
+     * @throws RuntimeException
      */
     final public static function fromYaml(string $file)
     {
+        if (
+            !file_exists($file) ||
+            !is_readable($file)
+        ) {
+            throw new RuntimeException('Config file not found!');
+        }
         $config = Yaml::read($file, self::dirTemp());
         self::append($config);
     }

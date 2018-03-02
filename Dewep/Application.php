@@ -2,7 +2,6 @@
 
 namespace Dewep;
 
-use Dewep\Exception\RuntimeException;
 use Dewep\Handlers\Error;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
@@ -14,24 +13,14 @@ use Dewep\Middleware\Builder as MB;
 class Application
 {
     protected static $allowHeaders = [
-        'Content-Type'      => null,
+        'Content-Type' => null,
     ];
 
     /**
-     * @param string $configFilePath
-     * @throws Exception\FileException
-     * @throws RuntimeException
+     * Application constructor.
      */
-    public function __construct(string $configFilePath)
+    public function __construct()
     {
-        if (
-            !file_exists($configFilePath) ||
-            !is_readable($configFilePath)
-        ) {
-            throw new RuntimeException('Config file not found!');
-        }
-        Config::fromYaml($configFilePath);
-
         Error::bootstrap();
     }
 
