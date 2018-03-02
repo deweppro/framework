@@ -14,12 +14,7 @@ use Dewep\Middleware\Builder as MB;
 class Application
 {
     protected static $allowHeaders = [
-        'User-Agent'        => null,
-        'X-Requested-With'  => null,
-        'If-Modified-Since' => null,
-        'Cache-Control'     => null,
         'Content-Type'      => null,
-        'Range'             => null,
     ];
 
     /**
@@ -29,8 +24,6 @@ class Application
      */
     public function __construct(string $configFilePath)
     {
-        //Config::makeSysFolders();
-
         if (
             !file_exists($configFilePath) ||
             !is_readable($configFilePath)
@@ -45,36 +38,34 @@ class Application
     /**
      *
      */
-    public static function fixOptionsRequest()
+    public static function cors()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        $allowHeaders = Config::get('allowHeaders', []);
 
-            $allowHeaders = Config::get('allowHeaders', []);
-
-            $headers = [
-                'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
-                'Access-Control-Allow-Methods'     => 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Max-Age'           => 0,
-                'Access-Control-Allow-Credentials' => 'true',
-                'Access-Control-Allow-Headers'    => implode(
-                    ', ',
-                    array_keys(
-                        array_replace(
-                            array_flip($allowHeaders),
-                            static::$allowHeaders
-                        )
+        $headers = [
+            'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
+            'Access-Control-Allow-Methods'     => 'HEAD,OPTIONS,GET,POST,PUT,DELETE,TRACE',
+            'Access-Control-Max-Age'           => 0,
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Allow-Headers'     => implode(
+                ', ',
+                array_keys(
+                    array_replace(
+                        array_flip($allowHeaders),
+                        static::$allowHeaders
                     )
-                ),
-                'Cache-Control'                    => 'no-cache',
-                'Pragma'                           => 'no-cache',
-            ];
+                )
+            ),
+            'Cache-Control'                    => 'no-cache',
+            'Pragma'                           => 'no-cache',
+        ];
 
-            foreach ($headers as $key => $value) {
-                header(sprintf('%s: %s', $key, $value), true);
-            }
+        foreach ($headers as $key => $value) {
+            header(sprintf('%s: %s', $key, $value), true);
+        }
 
-            http_response_code(204);
-
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            http_response_code(200);
             exit(0);
         }
     }
