@@ -9,9 +9,10 @@ require_once './../vendor/autoload.php';
 use Dewep\Application;
 use Dewep\Config;
 
-$config = Config::dirRoot() . '/config.yml';
-$app = new Application($config);
-$app->bootstrap();
+
+Config::fromYaml(Config::dirRoot().'/config.yml');
+Application::cors();
+(new Application())->bootstrap();
 ```
 
 ### A sample configuration file [config.yml]:
