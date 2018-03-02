@@ -58,7 +58,7 @@ class Application
                     ', ',
                     array_replace(
                         array_values($allowHeaders),
-                        static::allowHeaders
+                        static::$allowHeaders
                     )
                 ),
                 'Cache-Control'                    => 'no-cache',
