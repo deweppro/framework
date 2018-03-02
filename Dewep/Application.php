@@ -69,7 +69,7 @@ class Application
                 header(sprintf('%s: %s', $key, $value), true);
             }
 
-            http_send_status(204);
+            http_response_code(204);
 
             exit(0);
         }
