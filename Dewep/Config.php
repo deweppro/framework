@@ -133,7 +133,7 @@ class Config extends Registry
         return strtr($_SERVER['DOCUMENT_ROOT'], '\\', '/');
     }
 
-    final public static function makeSysFolders(): array
+    final public static function makeSysFolders()
     {
         $dirs = [
             self::dirData(),
