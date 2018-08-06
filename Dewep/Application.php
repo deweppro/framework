@@ -32,11 +32,11 @@ class Application
         $allowHeaders = Config::get('allowHeaders', []);
 
         $headers = [
-            'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
-            'Access-Control-Allow-Methods'     => 'HEAD,OPTIONS,GET,POST,PUT,DELETE,TRACE',
-            'Access-Control-Max-Age'           => 0,
+            'Access-Control-Allow-Origin' => Config::get('domain', '*'),
+            'Access-Control-Allow-Methods' => 'HEAD,OPTIONS,GET,POST,PUT,DELETE,TRACE',
+            'Access-Control-Max-Age' => 0,
             'Access-Control-Allow-Credentials' => 'true',
-            'Access-Control-Allow-Headers'     => implode(
+            'Access-Control-Allow-Headers' => implode(
                 ', ',
                 array_keys(
                     array_replace(
@@ -45,8 +45,8 @@ class Application
                     )
                 )
             ),
-            'Cache-Control'                    => 'no-cache',
-            'Pragma'                           => 'no-cache',
+            'Cache-Control' => 'no-cache',
+            'Pragma' => 'no-cache',
         ];
 
         foreach ($headers as $key => $value) {
@@ -73,9 +73,17 @@ class Application
         Container::set('response', $response);
 
         /**
+         * routes
+         */
+        $routes = Config::get('routes', []);
+        if (is_string($routes)) {
+            $routes = call_user_func($routes, $this);
+        }
+
+        /**
          * request
          */
-        $request = Request::bootstrap(Config::get('routes', []));
+        $request = Request::bootstrap($routes);
         Container::set('request', $request);
 
         /**
