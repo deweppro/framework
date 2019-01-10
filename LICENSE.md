@@ -1,7 +1,7 @@
 MIT License
 ===
 
-Copyright (c) 2017-2018 Mikhail Knyazhev
+Copyright (c) 2017-2019 Mikhail Knyazhev
 ---
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
