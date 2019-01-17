@@ -3,9 +3,11 @@
 namespace Dewep\Exception;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Class RuntimeException
+ *
+ * @package Dewep\Exception
  */
 class RuntimeException extends \Exception
 {
-    //put your code here
+
 }

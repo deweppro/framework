@@ -1,21 +1,24 @@
 debug: true
-
+domain: main.domain
 response: json
 
+#-------------------------------------------
 routes:
   /:
     GET: Dewep\Demo::demo
 
+#-------------------------------------------
 middleware:
-  request:
+  before:
     Dewep\Middleware\Auth:
       cookie: x-token
 
-  response:
+  after:
     Dewep\Middleware\Debug:
       name: app.log
 
 
+#-------------------------------------------
 providers:
   logger:
     _: Dewep\Providers\LoggerProvider
@@ -31,4 +34,6 @@ providers:
     login: default
     password: default
 
-    
+#-------------------------------------------
+
+

@@ -6,13 +6,16 @@ use Dewep\Exception\FileException;
 use Symfony\Component\Yaml\Yaml as Y;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Class Yaml
+ *
+ * @package Dewep\Parsers
  */
 class Yaml
 {
     /**
-     * @param string $path
+     * @param string      $path
      * @param string|null $tempDir
+     *
      * @return array
      * @throws FileException
      */
@@ -47,6 +50,7 @@ class Yaml
     /**
      * @param string $path
      * @param string $tempDir
+     *
      * @return string
      */
     protected static function getTempFileName(string $path, string $tempDir): string

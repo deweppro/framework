@@ -8,7 +8,9 @@ use Dewep\Exception\HttpException;
 use Dewep\Http\Response;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Class Error
+ *
+ * @package Dewep\Handlers
  */
 class Error
 {
@@ -29,7 +31,9 @@ class Error
      * @param $errstr
      * @param $errfile
      * @param $errline
-     * @return bool|void
+     *
+     * @return bool
+     * @throws \Exception
      */
     public static function error($errno, $errstr, $errfile, $errline)
     {
@@ -38,16 +42,17 @@ class Error
         }
         $errtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
 
-        return self::build($errno, $errstr, $errfile, $errline, $errtrace);
+        self::build($errno, $errstr, $errfile, $errline, $errtrace);
     }
 
     /**
-     * @param $no
-     * @param $str
-     * @param $file
-     * @param $line
+     * @param       $no
+     * @param       $str
+     * @param       $file
+     * @param       $line
      * @param array $trace
-     * @param int $httpCode
+     * @param int   $httpCode
+     *
      * @throws \Exception
      */
     private static function build($no, $str, $file, $line, $trace = [], int $httpCode = 500)
@@ -56,7 +61,7 @@ class Error
 
         $response = [
             'errorMessage' => $str,
-            'errorCode'    => $no,
+            'errorCode' => $no,
         ];
 
         $file = explode('/', $file);
@@ -75,14 +80,14 @@ class Error
         /** @var Response $res */
         $res = Container::get('response');
 
-        echo $res
-            ->setBody($response, Config::get('response'))
+        echo $res->setBody($response, Config::get('response'))
             ->setStatusCode($httpCode ?? 500);
-        die;
+        exit(0);
     }
 
     /**
      * @param \Throwable $e
+     *
      * @throws \Exception
      */
     public static function exception(\Throwable $e)
@@ -93,14 +98,7 @@ class Error
             $code = $e->getCode();
         }
 
-        return self::build(
-            $e->getCode(),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTrace(),
-            $code
-        );
+        self::build($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTrace(), $code);
     }
 
 }

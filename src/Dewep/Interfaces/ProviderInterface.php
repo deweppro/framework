@@ -3,12 +3,16 @@
 namespace Dewep\Interfaces;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Interface ProviderInterface
+ *
+ * @package Dewep\Interfaces
  */
 interface ProviderInterface
 {
+
     /**
      * ProviderInterface constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config);

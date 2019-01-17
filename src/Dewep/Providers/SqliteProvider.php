@@ -5,6 +5,11 @@ namespace Dewep\Providers;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Sqlite;
 
+/**
+ * Class SqliteProvider
+ *
+ * @package Dewep\Providers
+ */
 class SqliteProvider implements ProviderInterface
 {
     /** @var string */
@@ -12,6 +17,7 @@ class SqliteProvider implements ProviderInterface
 
     /**
      * SqliteProvider constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config)

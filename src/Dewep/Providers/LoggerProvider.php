@@ -7,7 +7,9 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Class LoggerProvider
+ *
+ * @package Dewep\Providers
  */
 class LoggerProvider implements ProviderInterface
 {
@@ -20,11 +22,12 @@ class LoggerProvider implements ProviderInterface
 
     /**
      * LoggerProvider constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config)
     {
-        $this->debug   = !empty($config['debug'] ?? false);
+        $this->debug = !empty($config['debug'] ?? false);
         $this->logfile = sprintf(
             '%s/%s',
             $config['_']['temp'] ?? sys_get_temp_dir(),
@@ -36,6 +39,7 @@ class LoggerProvider implements ProviderInterface
 
     /**
      * @return Logger
+     * @throws \Exception
      */
     public function handler(): Logger
     {

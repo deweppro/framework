@@ -20,12 +20,12 @@ abstract class Controller
     protected $params = [];
 
     /**
-     * @param Request $request
+     * @param Request  $request
      * @param Response $response
      */
     public function __construct(Request $request, Response $response, ...$params)
     {
-        $this->request  = $request;
+        $this->request = $request;
         $this->response = $response;
 
         $this->logger = Container::get('logger');

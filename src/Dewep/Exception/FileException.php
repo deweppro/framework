@@ -3,9 +3,11 @@
 namespace Dewep\Exception;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Class FileException
+ *
+ * @package Dewep\Exception
  */
 class FileException extends \Exception
 {
-    //put your code here
+
 }

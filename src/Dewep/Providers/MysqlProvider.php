@@ -6,7 +6,9 @@ use Dewep\Interfaces\ProviderInterface;
 use Dewep\Mysql;
 
 /**
- * @author Mikhail Knyazhev <markus621@gmail.com>
+ * Class MysqlProvider
+ *
+ * @package Dewep\Providers
  */
 class MysqlProvider implements ProviderInterface
 {
@@ -23,19 +25,20 @@ class MysqlProvider implements ProviderInterface
 
     /**
      * MysqlProvider constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config)
     {
-        $this->host     = (string)($config['host'] ?? 'localhost');
-        $this->port     = (int)($config['port'] ?? 3306);
-        $this->dbname   = (string)($config['dbname'] ?? 'default');
-        $this->login    = (string)($config['login'] ?? '');
+        $this->host = (string)($config['host'] ?? 'localhost');
+        $this->port = (int)($config['port'] ?? 3306);
+        $this->dbname = (string)($config['dbname'] ?? 'default');
+        $this->login = (string)($config['login'] ?? '');
         $this->password = (string)($config['password'] ?? '');
     }
 
     /**
-     * @return Mysql
+     * @return Mysql|mixed
      */
     public function handler()
     {

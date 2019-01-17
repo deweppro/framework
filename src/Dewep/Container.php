@@ -13,7 +13,7 @@ class Container extends Registry
 
     /**
      * @param string $key
-     * @param $value
+     * @param        $value
      */
     public static function exist(string $key, $value)
     {
@@ -24,7 +24,8 @@ class Container extends Registry
 
     /**
      * @param string $key
-     * @param null $default
+     * @param null   $default
+     *
      * @return mixed|null
      */
     public static function get(string $key, $default = null)
@@ -40,6 +41,7 @@ class Container extends Registry
 
     /**
      * @param string $key
+     *
      * @return null|ProviderInterface
      */
     protected static function autoload(string $key)
@@ -47,9 +49,9 @@ class Container extends Registry
         $providers = Config::get('providers', []);
 
         if (isset($providers[$key])) {
-            $config      = $providers[$key];
-            $class       = $config['_'];
-            $config['_'] = Config::getDirs();
+            $config = $providers[$key];
+            $class = $config['_'];
+            $config['_'] = Config::getPaths();
 
             return (new $class($config))->handler();
         }
@@ -59,6 +61,7 @@ class Container extends Registry
 
     /**
      * @param string $key
+     *
      * @return bool
      */
     public static function has(string $key)
@@ -78,7 +81,7 @@ class Container extends Registry
     public static function all(): array
     {
         $exist = self::$__registry[self::__class()] ?? [];
-        $can   = Config::get('providers', []);
+        $can = Config::get('providers', []);
 
         $result = array_replace($can, $exist);
 
@@ -87,6 +90,7 @@ class Container extends Registry
 
     /**
      * @param $value
+     *
      * @return mixed
      */
     protected static function value($value)
