@@ -9,16 +9,11 @@ namespace Dewep\Interfaces;
  */
 interface ProviderInterface
 {
-
     /**
-     * ProviderInterface constructor.
+     * @param ApplicationInterface $app
+     * @param array                $config
      *
-     * @param array $config
-     */
-    public function __construct(array $config);
-
-    /**
      * @return mixed
      */
-    public function handler();
+    public function handler(ApplicationInterface $app, array $config);
 }

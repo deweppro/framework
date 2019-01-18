@@ -2,18 +2,24 @@
 
 namespace Dewep;
 
+use Dewep\Handlers\BlankApp;
 use Dewep\Handlers\Error;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
-use Dewep\Middleware\Builder as MB;
+use Dewep\Interfaces\ApplicationInterface;
 
 /**
  * Class Application
  *
  * @package Dewep
  */
-class Application
+class Application extends BlankApp implements ApplicationInterface
 {
+    /** @var Request */
+    protected $request;
+    /** @var Response */
+    protected $response;
+
     /** @var array */
     protected static $allowHeaders = [
         'Content-Type' => null,
@@ -63,6 +69,22 @@ class Application
     }
 
     /**
+     * @return Request
+     */
+    public function request(): Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @return Response
+     */
+    public function response(): Response
+    {
+        return $this->response;
+    }
+
+    /**
      * @throws \Exception
      */
     public function bootstrap()
@@ -71,40 +93,52 @@ class Application
 
         /**
          * routes
+         *
+         * In a config it is possible to specify an array
+         * of references and the controllers processing them.
+         *
+         * @example
+         *         routes:
+         *              /:
+         *                  POST,GET: IndexController::index
+         *
+         * Or specify the controller that handles routing.
+         *
+         * @example
+         *         routes: RoutingHelper::build
+         *
+         * @var array|string $routes
          */
         $routes = Config::get('routes', []);
         if (is_string($routes)) {
-            $routes = call_user_func($routes, $this);
+            $routes = Builder::make($this, $routes, null, []);
         }
 
         /**
-         * request
+         *  Build Request+Response
          */
-        $request = Request::bootstrap($routes);
-        Container::set('request', $request);
-
-        /**
-         * response
-         */
-        $response = Response::bootstrap();
-        Container::set('response', $response);
+        $this->request = Request::bootstrap($routes);
+        $this->response = Response::bootstrap();
 
         /**
          * middleware
          */
         $middleware = Config::get('middleware', []);
 
-        MB::makes($middleware['before'] ?? [], $request, $response, 'before');
+        Builder::makes($this, $middleware['before'] ?? [], 'before');
 
-        /** @var Response $content */
-        $content = $this->getApplication($request, $response);
+        /**
+         * call controllers
+         */
+        $content = $this->router();
         if ($content instanceof Response) {
             $response = $content;
         } else {
-            $response = $response->setBody($content, Config::get('response'));
+            $response = $this->response()
+                ->setBody($content, Config::get('response'));
         }
 
-        MB::makes($middleware['after'] ?? [], $request, $response, 'after');
+        Builder::makes($this, $middleware['after'] ?? [], 'after');
 
         $err = ob_get_contents();
         ob_end_flush();
@@ -120,25 +154,17 @@ class Application
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
-     *
      * @return mixed
      * @throws \Exception
      */
-    private function getApplication(Request $request, Response $response)
+    protected function router()
     {
         /** @var array $attributes */
-        $attributes = $request->route->getAttributes();
+        $attributes = $this->request()->route->getAttributes();
 
         /** @var string $heandler */
-        $heandler = $request->route->getHandler();
+        $heandler = $this->request()->route->getHandler();
 
-        list($class, $method) = explode('::', $heandler, 2);
-
-        $object = new $class($request, $response);
-
-        return call_user_func_array([$object, $method], $attributes);
+        return $this->call($heandler, $attributes);
     }
-
 }
