@@ -2,30 +2,17 @@
 
 namespace Dewep;
 
+use Dewep\Handlers\BlankApp;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Patterns\Registry;
 
-/**
- * @author Mikhail Knyazhev <markus621@gmail.com>
- */
 class Container extends Registry
 {
-
     /**
      * @param string $key
-     * @param $value
-     */
-    public static function exist(string $key, $value)
-    {
-        if (!isset(self::$__registry[self::__class()][$key])) {
-            self::set($key, $value);
-        }
-    }
-
-    /**
-     * @param string $key
-     * @param null $default
-     * @return mixed|null
+     * @param mixed  $default
+     *
+     * @return mixed
      */
     public static function get(string $key, $default = null)
     {
@@ -40,18 +27,23 @@ class Container extends Registry
 
     /**
      * @param string $key
+     *
      * @return null|ProviderInterface
      */
     protected static function autoload(string $key)
     {
         $providers = Config::get('providers', []);
 
-        if (isset($providers[$key])) {
-            $config      = $providers[$key];
-            $class       = $config['_'];
-            $config['_'] = Config::getDirs();
-
-            return (new $class($config))->handler();
+        if (!empty($providers[$key]['_'])) {
+            $obj = Builder::make(
+                new BlankApp(),
+                $providers[$key]['_'],
+                null,
+                $providers[$key]
+            );
+            if ($obj !== false) {
+                return $obj;
+            }
         }
 
         return null;
@@ -59,9 +51,10 @@ class Container extends Registry
 
     /**
      * @param string $key
+     *
      * @return bool
      */
-    public static function has(string $key)
+    public static function has(string $key): bool
     {
         if (isset(self::$__registry[self::__class()][$key])) {
             return true;
@@ -78,7 +71,7 @@ class Container extends Registry
     public static function all(): array
     {
         $exist = self::$__registry[self::__class()] ?? [];
-        $can   = Config::get('providers', []);
+        $can = Config::get('providers', []);
 
         $result = array_replace($can, $exist);
 
@@ -86,7 +79,8 @@ class Container extends Registry
     }
 
     /**
-     * @param $value
+     * @param mixed $value
+     *
      * @return mixed
      */
     protected static function value($value)
@@ -94,7 +88,7 @@ class Container extends Registry
         if ($value instanceof \Closure) {
             return $value();
         } elseif (is_string($value)) {
-            $obj = call_user_func($value);
+            $obj = Builder::make(new BlankApp(), $value, null, []);
             if ($obj !== false) {
                 return $obj;
             }
