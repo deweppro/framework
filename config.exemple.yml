@@ -1,6 +1,8 @@
 debug: true
 domain: main.domain
 response: json
+allowHeaders:
+  - X-JWT
 
 #-------------------------------------------
 routes:
@@ -10,10 +12,14 @@ routes:
 #-------------------------------------------
 middleware:
   before:
-    Dewep\Middleware\Auth:
-      cookie: x-token
+    Dewep\Middleware\CookieUserAuth\CookieUserAuth: &CookieUserAuth
+      name: id
+      secret: 'secret key'
+      exp: 3600
+      domain: main.domain
 
   after:
+    Dewep\Middleware\CookieUserAuth\CookieUserAuth: *CookieUserAuth
     Dewep\Middleware\Debug:
       name: app.log
 
@@ -33,6 +39,15 @@ providers:
     dbname: default
     login: default
     password: default
+
+  twig:
+    _: Dewep\Providers\TwigProvider
+
+  redis:
+    _: Dewep\Providers\RedisProvider
+    scheme: 'tcp'
+    host: 'redis'
+    port: 6379
 
 #-------------------------------------------
 
