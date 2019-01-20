@@ -27,10 +27,10 @@ class Error
     }
 
     /**
-     * @param $errno
-     * @param $errstr
-     * @param $errfile
-     * @param $errline
+     * @param mixed $errno
+     * @param mixed $errstr
+     * @param mixed $errfile
+     * @param mixed $errline
      *
      * @return bool
      * @throws \Exception
@@ -46,10 +46,10 @@ class Error
     }
 
     /**
-     * @param       $no
-     * @param       $str
-     * @param       $file
-     * @param       $line
+     * @param mixed $no
+     * @param mixed $str
+     * @param mixed $file
+     * @param mixed $line
      * @param array $trace
      * @param int   $httpCode
      *
@@ -79,9 +79,9 @@ class Error
 
         /** @var Response $res */
         $res = Container::get('response');
-
-        echo $res->setBody($response, Config::get('response'))
-            ->setStatusCode($httpCode ?? 500);
+        $res->setBody($response, Config::get('response'));
+        $res->setStatusCode($httpCode ?? 500);
+        echo $res;
         exit(0);
     }
 

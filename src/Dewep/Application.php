@@ -30,6 +30,8 @@ class Application extends BlankApp implements ApplicationInterface
      */
     public function __construct()
     {
+        parent::__construct();
+
         Error::bootstrap();
     }
 

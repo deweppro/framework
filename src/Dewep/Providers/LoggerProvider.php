@@ -2,6 +2,8 @@
 
 namespace Dewep\Providers;
 
+use Dewep\Config;
+use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ProviderInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -13,43 +15,22 @@ use Monolog\Logger;
  */
 class LoggerProvider implements ProviderInterface
 {
-    /** @var bool */
-    private $debug;
-    /** @var string */
-    private $logfile;
-    /** @var string */
-    private $appname;
-
-    /**
-     * LoggerProvider constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->debug = !empty($config['debug'] ?? false);
-        $this->logfile = sprintf(
-            '%s/%s',
-            $config['_']['temp'] ?? sys_get_temp_dir(),
-            $config['filename'] ?? 'app.log'
-        );
-
-        $this->appname = (string)($config['name'] ?? 'app');
-    }
-
     /**
      * @return Logger
      * @throws \Exception
      */
-    public function handler(): Logger
+    public function handler(ApplicationInterface $app, array $config)
     {
-        $logger = new Logger($this->appname);
-        $logger->pushHandler(
-            new StreamHandler(
-                $this->logfile,
-                $this->debug ? Logger::DEBUG : Logger::INFO
-            )
+        $debug = !empty($config['debug'] ?? false) ? Logger::DEBUG : Logger::INFO;
+        $logfile = sprintf(
+            '%s/%s',
+            Config::tempPath(),
+            $config['filename'] ?? 'app.log'
         );
+
+        $appname = (string)($config['name'] ?? 'app');
+        $logger = new Logger($appname);
+        $logger->pushHandler(new StreamHandler($logfile, $debug));
 
         return $logger;
     }

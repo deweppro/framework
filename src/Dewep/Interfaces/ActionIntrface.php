@@ -23,7 +23,7 @@ interface ActionIntrface
 
     /**
      * @param string $key
-     * @param        $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -31,7 +31,7 @@ interface ActionIntrface
 
     /**
      * @param string $key
-     * @param        $value
+     * @param mixed  $value
      *
      * @return mixed
      */
@@ -39,7 +39,7 @@ interface ActionIntrface
 
     /**
      * @param string $key
-     * @param        $value
+     * @param mixed  $value
      *
      * @return mixed
      */

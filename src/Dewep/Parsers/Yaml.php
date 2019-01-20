@@ -22,26 +22,26 @@ class Yaml
     public static function read(string $path, string $tempDir = null): array
     {
         $tempDir = $tempDir ?? sys_get_temp_dir();
-        if (is_file($path) && is_readable($path)) {
-            $tempFileName = self::getTempFileName($path, $tempDir);
 
-            if (file_exists($tempFileName)) {
-                $yaml = include $tempFileName;
-            } else {
-                $yaml = Y::parse(file_get_contents($path));
-                if (is_writeable($tempDir)) {
-                    file_put_contents(
-                        $tempFileName,
-                        '<?php return '.var_export($yaml, true).';'
-                    );
-                }
-            }
-
-            if (empty($yaml)) {
-                $yaml = [];
-            }
-        } else {
+        if (!is_file($path) || !is_readable($path)) {
             throw new FileException($path.' is not found or cannot be read.');
+        }
+        $tempFileName = self::getTempFileName($path, $tempDir);
+
+        if (file_exists($tempFileName)) {
+            $yaml = include $tempFileName;
+        } else {
+            $yaml = Y::parse((string)file_get_contents($path));
+            if (is_writeable($tempDir)) {
+                file_put_contents(
+                    $tempFileName,
+                    '<?php return '.var_export($yaml, true).';'
+                );
+            }
+        }
+
+        if (empty($yaml)) {
+            $yaml = [];
         }
 
         return $yaml;

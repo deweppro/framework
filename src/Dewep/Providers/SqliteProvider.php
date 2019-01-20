@@ -2,6 +2,8 @@
 
 namespace Dewep\Providers;
 
+use Dewep\Config;
+use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Sqlite;
 
@@ -12,28 +14,17 @@ use Dewep\Sqlite;
  */
 class SqliteProvider implements ProviderInterface
 {
-    /** @var string */
-    private $filename;
-
-    /**
-     * SqliteProvider constructor.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->filename = sprintf(
-            '%s/%s',
-            $config['_']['temp'] ?? sys_get_temp_dir(),
-            $config['filename'] ?? 'sqlite.db'
-        );
-    }
-
     /**
      * @return Sqlite
      */
-    public function handler()
+    public function handler(ApplicationInterface $app, array $config)
     {
-        return new Sqlite($this->filename);
+        $filename = sprintf(
+            '%s/%s',
+            Config::storagePath(),
+            $config['filename'] ?? 'sqlite.db'
+        );
+
+        return new Sqlite($filename);
     }
 }

@@ -79,7 +79,7 @@ class Container extends Registry
     }
 
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return mixed
      */
