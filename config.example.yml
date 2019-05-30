@@ -50,5 +50,6 @@ providers:
     port: 6379
 
 #-------------------------------------------
-
+console:
+  app.restore: Dewep\Handlers\Consoles\CreateDirs
 

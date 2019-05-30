@@ -4,22 +4,8 @@ namespace Dewep\Handlers;
 
 use Dewep\Interfaces\ApplicationInterface;
 
-class BlankApp implements ApplicationInterface
+abstract class BlankApp implements ApplicationInterface
 {
-    /**
-     * BlankApp constructor.
-     */
-    public function __construct()
-    {
-    }
-
-    /**
-     *
-     */
-    public function bootstrap()
-    {
-
-    }
 
     /**
      * @param mixed $function

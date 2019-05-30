@@ -43,7 +43,10 @@ class Config extends Registry
      */
     final public static function append(array $config)
     {
-        self::$__registry[self::__class()] = $config;
+        self::$__registry[self::__class()] = array_replace_recursive(
+            self::$__registry[self::__class()] ?? [],
+            $config
+        );
     }
 
     /**
@@ -116,14 +119,14 @@ class Config extends Registry
     final public static function getPaths(): array
     {
         return [
-            self::BASE_PATH_NAME => self::basePath(),
-            self::APP_PATH_NAME => self::appPath(),
+            self::BASE_PATH_NAME      => self::basePath(),
+            self::APP_PATH_NAME       => self::appPath(),
             self::RESOURCES_PATH_NAME => self::resourcesPath(),
-            self::DATABASE_PATH_NAME => self::databasePath(),
-            self::TEMP_PATH_NAME => self::tempPath(),
-            self::STORAGE_PATH_NAME => self::storagePath(),
-            self::TESTS_PATH_NAME => self::testsPath(),
-            self::PUBLIC_PATH_NAME => self::publicPath(),
+            self::DATABASE_PATH_NAME  => self::databasePath(),
+            self::TEMP_PATH_NAME      => self::tempPath(),
+            self::STORAGE_PATH_NAME   => self::storagePath(),
+            self::TESTS_PATH_NAME     => self::testsPath(),
+            self::PUBLIC_PATH_NAME    => self::publicPath(),
         ];
     }
 
