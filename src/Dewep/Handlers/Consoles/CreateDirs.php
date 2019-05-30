@@ -7,9 +7,9 @@ namespace Dewep\Handlers\Consoles;
 use Dewep\Config;
 use Dewep\Console\Input;
 use Dewep\Console\Output;
+use Dewep\Interfaces\ConsoleInterface;
 
-class CreateDirs
-//    implements ConsoleInterface
+class CreateDirs implements ConsoleInterface
 {
     public function help(): string
     {
@@ -23,7 +23,6 @@ class CreateDirs
 
     public function handler(Input $input, Output $output)
     {
-        throw new \Exception('bjbjfbd');
         Config::restoreFolderStructure();
     }
 }
