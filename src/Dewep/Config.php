@@ -33,7 +33,7 @@ class Config extends Registry
             throw new RuntimeException('Config file not found!');
         }
 
-        self::set(self::BASE_PATH_NAME, dirname($file));
+        self::set(self::BASE_PATH_NAME, (string)realpath(dirname($file)));
 
         self::append(Yaml::read($file, self::tempPath()));
     }
@@ -62,7 +62,7 @@ class Config extends Registry
      */
     final public static function appPath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::APP_PATH_NAME);
+        return (string)(self::basePath().'/'.self::APP_PATH_NAME);
     }
 
     /**
@@ -70,7 +70,7 @@ class Config extends Registry
      */
     final public static function resourcesPath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::RESOURCES_PATH_NAME);
+        return (string)(self::basePath().'/'.self::RESOURCES_PATH_NAME);
     }
 
     /**
@@ -78,7 +78,7 @@ class Config extends Registry
      */
     final public static function databasePath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::DATABASE_PATH_NAME);
+        return (string)(self::basePath().'/'.self::DATABASE_PATH_NAME);
     }
 
     /**
@@ -86,7 +86,7 @@ class Config extends Registry
      */
     final public static function tempPath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::TEMP_PATH_NAME);
+        return (string)(self::basePath().'/'.self::TEMP_PATH_NAME);
     }
 
     /**
@@ -94,7 +94,7 @@ class Config extends Registry
      */
     final public static function storagePath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::STORAGE_PATH_NAME);
+        return (string)(self::basePath().'/'.self::STORAGE_PATH_NAME);
     }
 
     /**
@@ -102,7 +102,7 @@ class Config extends Registry
      */
     final public static function testsPath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::TESTS_PATH_NAME);
+        return (string)(self::basePath().'/'.self::TESTS_PATH_NAME);
     }
 
     /**
@@ -110,7 +110,7 @@ class Config extends Registry
      */
     final public static function publicPath(): string
     {
-        return (string)realpath(self::basePath().'/'.self::PUBLIC_PATH_NAME);
+        return (string)(self::basePath().'/'.self::PUBLIC_PATH_NAME);
     }
 
     /**
@@ -135,7 +135,7 @@ class Config extends Registry
     {
         foreach (self::getPaths() as $name => $path) {
             if (!is_dir($path)) {
-                mkdir($path, 0777);
+                mkdir($path, 0777, true);
             }
         }
     }
