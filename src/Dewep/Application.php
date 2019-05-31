@@ -116,7 +116,7 @@ class Application implements ApplicationInterface
         $this->middleware($request, $response, $middleware['after'] ?? [], 'after');
 
         $err = ob_get_contents();
-        ob_end_flush();
+        ob_end_clean();
 
         /**
          * errors
