@@ -22,7 +22,7 @@ class Error
         set_error_handler('\\Dewep\\Handlers\\Error::error');
         set_exception_handler('\\Dewep\\Handlers\\Error::exception');
 
-        ini_set('display_errors', 1);
+        ini_set('display_errors', '1');
         error_reporting(-1);
     }
 
