@@ -15,15 +15,17 @@ routes:
 #-------------------------------------------
 middleware:
   before:
-    Dewep\Middleware\CookieUserAuth\CookieUserAuth: &CookieUserAuth
+    cookie: &CookieUserAuth
+      _: Dewep\Middleware\Auth\Cookies
       name: id
       secret: 'secret key'
       exp: 3600
-      domain: main.domain
+      domain: localhost
 
   after:
-    Dewep\Middleware\CookieUserAuth\CookieUserAuth: *CookieUserAuth
-    Dewep\Middleware\Debug:
+    cookie: *CookieUserAuth
+    debug:
+      _: Dewep\Middleware\Debug
       name: app.log
 
 

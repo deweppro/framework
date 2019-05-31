@@ -170,6 +170,6 @@ class Application implements ApplicationInterface
 
         array_unshift($attributes, $request);
 
-        return Builder::call($handler, $attributes);
+        return Builder::make($handler, null, $attributes);
     }
 }
