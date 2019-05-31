@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Providers;
 
 use Dewep\Config;
-use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ProviderInterface;
 
 /**
@@ -14,17 +13,19 @@ use Dewep\Interfaces\ProviderInterface;
 class TwigProvider implements ProviderInterface
 {
     /**
-     * @return mixed|\Twig_Environment
+     * @param array $config
+     *
+     * @return mixed|\Twig\Environment
      */
-    public function handler(ApplicationInterface $app, array $config)
+    public function handler(array $config)
     {
-        $loader = new \Twig_Loader_Filesystem(Config::resourcesPath());
-        $twig = new \Twig_Environment(
-            $loader, array(
-                'cache' => Config::tempPath(),
-                'auto_reload' => true,
+        $loader = new \Twig\Loader\FilesystemLoader(Config::resourcesPath());
+        $twig = new \Twig\Environment(
+            $loader, [
+                'cache'         => Config::tempPath(),
+                'auto_reload'   => true,
                 'optimizations' => -1,
-            )
+            ]
         );
 
         return $twig;

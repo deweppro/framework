@@ -6,7 +6,10 @@ allowHeaders:
 
 #-------------------------------------------
 routes:
-  /:
+  /public/page/{id:\d+}:
+    GET: Dewep\Demo::demo
+  /private/page/{name}:
+    _: Dewep\Middleware\Guard
     GET: Dewep\Demo::demo
 
 #-------------------------------------------

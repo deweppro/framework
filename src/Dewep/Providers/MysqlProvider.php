@@ -1,8 +1,7 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Providers;
 
-use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Mysql;
 
@@ -14,9 +13,11 @@ use Dewep\Mysql;
 class MysqlProvider implements ProviderInterface
 {
     /**
-     * @return Mysql|mixed
+     * @param array $config
+     *
+     * @return \Dewep\Mysql|mixed
      */
-    public function handler(ApplicationInterface $app, array $config)
+    public function handler(array $config)
     {
         return new Mysql(
             (string)($config['host'] ?? 'localhost'),

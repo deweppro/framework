@@ -1,11 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep;
 
-use Dewep\Handlers\BlankApp;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Patterns\Registry;
 
+/**
+ * Class Container
+ *
+ * @package Dewep
+ */
 class Container extends Registry
 {
     /**
@@ -36,7 +40,6 @@ class Container extends Registry
 
         if (!empty($providers[$key]['_'])) {
             $obj = Builder::make(
-                new BlankApp(),
                 $providers[$key]['_'],
                 null,
                 $providers[$key]
@@ -88,7 +91,7 @@ class Container extends Registry
         if ($value instanceof \Closure) {
             return $value();
         } elseif (is_string($value)) {
-            $obj = Builder::make(new BlankApp(), $value, null, []);
+            $obj = Builder::make($value);
             if ($obj !== false) {
                 return $obj;
             }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep;
 
@@ -52,9 +52,43 @@ class Config extends Registry
     /**
      * @return string
      */
+    final public static function tempPath(): string
+    {
+        return (string)(self::basePath().'/'.self::TEMP_PATH_NAME);
+    }
+
+    /**
+     * @return string
+     */
     final public static function basePath(): string
     {
         return self::get(self::BASE_PATH_NAME);
+    }
+
+    final public static function restoreFolderStructure()
+    {
+        foreach (self::getPaths() as $name => $path) {
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    final public static function getPaths(): array
+    {
+        return [
+            self::BASE_PATH_NAME      => self::basePath(),
+            self::APP_PATH_NAME       => self::appPath(),
+            self::RESOURCES_PATH_NAME => self::resourcesPath(),
+            self::DATABASE_PATH_NAME  => self::databasePath(),
+            self::TEMP_PATH_NAME      => self::tempPath(),
+            self::STORAGE_PATH_NAME   => self::storagePath(),
+            self::TESTS_PATH_NAME     => self::testsPath(),
+            self::PUBLIC_PATH_NAME    => self::publicPath(),
+        ];
     }
 
     /**
@@ -84,14 +118,6 @@ class Config extends Registry
     /**
      * @return string
      */
-    final public static function tempPath(): string
-    {
-        return (string)(self::basePath().'/'.self::TEMP_PATH_NAME);
-    }
-
-    /**
-     * @return string
-     */
     final public static function storagePath(): string
     {
         return (string)(self::basePath().'/'.self::STORAGE_PATH_NAME);
@@ -111,33 +137,6 @@ class Config extends Registry
     final public static function publicPath(): string
     {
         return (string)(self::basePath().'/'.self::PUBLIC_PATH_NAME);
-    }
-
-    /**
-     * @return array
-     */
-    final public static function getPaths(): array
-    {
-        return [
-            self::BASE_PATH_NAME      => self::basePath(),
-            self::APP_PATH_NAME       => self::appPath(),
-            self::RESOURCES_PATH_NAME => self::resourcesPath(),
-            self::DATABASE_PATH_NAME  => self::databasePath(),
-            self::TEMP_PATH_NAME      => self::tempPath(),
-            self::STORAGE_PATH_NAME   => self::storagePath(),
-            self::TESTS_PATH_NAME     => self::testsPath(),
-            self::PUBLIC_PATH_NAME    => self::publicPath(),
-        ];
-    }
-
-
-    final public static function restoreFolderStructure()
-    {
-        foreach (self::getPaths() as $name => $path) {
-            if (!is_dir($path)) {
-                mkdir($path, 0777, true);
-            }
-        }
     }
 
 }

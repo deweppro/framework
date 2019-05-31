@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Providers\Predis;
 
@@ -11,11 +11,19 @@ namespace Dewep\Providers\Predis;
  */
 class GetJsonCommand extends \Predis\Command\Command
 {
+    /**
+     * @return string
+     */
     public function getId()
     {
         return 'GET';
     }
 
+    /**
+     * @param $data
+     *
+     * @return mixed|string
+     */
     public function parseResponse($data)
     {
         return json_decode($data, true) ?? $data;

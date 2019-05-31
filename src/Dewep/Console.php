@@ -1,20 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep;
 
 use Dewep\Console\Input;
 use Dewep\Console\Output;
-use Dewep\Handlers\BlankApp;
-use Dewep\Http\Request;
-use Dewep\Http\Response;
 use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ConsoleInterface;
 
 /**
  * Class Console
+ *
  * @package Dewep
  */
-class Console extends BlankApp implements ApplicationInterface
+class Console implements ApplicationInterface
 {
     /**
      * @var string|null
@@ -95,27 +93,11 @@ class Console extends BlankApp implements ApplicationInterface
         foreach ($this->commands as $name => $handler) {
             $this->output->danger(
                 sprintf(
-                    "\t%s: %s".PHP_EOL,
+                    "\t%s: %s",
                     $name,
-                    $this->call([$handler, 'help'], [])
+                    Builder::call([$handler, 'help'], [])
                 )
             );
         }
-    }
-
-    /**
-     * @return Request
-     */
-    public function request(): Request
-    {
-
-    }
-
-    /**
-     * @return Response
-     */
-    public function response(): Response
-    {
-
     }
 }

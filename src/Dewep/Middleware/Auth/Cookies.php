@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Middleware\Auth;
 
-use Dewep\Interfaces\ApplicationInterface;
+use Dewep\Container;
 use Dewep\Middleware\BaseClass;
 
 /**
@@ -20,15 +20,43 @@ use Dewep\Middleware\BaseClass;
 class Cookies extends BaseClass
 {
     const ALGO_DEFAULT = 'gost-crypto';
-    /** @var array */
+
+    /**
+     * @var array
+     */
     private static $payload = [];
-    /** @var array */
+
+    /**
+     * @var array
+     */
     private static $header = [
         'alg' => self::ALGO_DEFAULT,
         'exp' => 0,
     ];
-    /** @var bool */
+
+    /**
+     * @var bool
+     */
     private static $changed = false;
+
+    /**
+     * @var \Dewep\Http\Request
+     */
+    protected $request;
+
+    /**
+     * @var \Dewep\Http\Response
+     */
+    protected $response;
+
+    /**
+     * Cookies constructor.
+     */
+    public function __construct()
+    {
+        $this->request = Container::get('request');
+        $this->response = Container::get('response');
+    }
 
     /**
      * @param string $key
@@ -62,13 +90,12 @@ class Cookies extends BaseClass
     }
 
     /**
-     * @param ApplicationInterface $app
-     * @param array                $params
+     * @param array $params
      *
      * @return bool|mixed
      * @throws \Exception
      */
-    public function before(ApplicationInterface $app, array $params)
+    public function before(array $params)
     {
         $this->setParams($params);
 
@@ -77,7 +104,7 @@ class Cookies extends BaseClass
             throw new \Exception('Secret key for JWT authorization not found!');
         }
 
-        $cookie = $app->request()->headers->getCookie(
+        $cookie = $this->request->headers->cookie->get(
             $this->getParam('name', 'x-user-token'),
             ''
         );
@@ -137,19 +164,18 @@ class Cookies extends BaseClass
     }
 
     /**
-     * @param ApplicationInterface $app
-     * @param array                $params
+     * @param array $params
      *
      * @return bool|mixed
      * @throws \Exception
      */
-    public function after(ApplicationInterface $app, array $params)
+    public function after(array $params)
     {
         $this->setParams($params);
 
         if (!empty(self::$payload)) {
 
-            $app->response()->headers->setCookies(
+            $this->response->headers->setCookies(
                 $this->getParam('name', 'x-user-token'),
                 $this->buildToken(),
                 self::$header['exp'],

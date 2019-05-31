@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Providers;
 
 use Dewep\Config;
-use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Sqlite;
 
@@ -15,9 +14,11 @@ use Dewep\Sqlite;
 class SqliteProvider implements ProviderInterface
 {
     /**
-     * @return Sqlite
+     * @param array $config
+     *
+     * @return \Dewep\Sqlite|mixed
      */
-    public function handler(ApplicationInterface $app, array $config)
+    public function handler(array $config)
     {
         $filename = sprintf(
             '%s/%s',

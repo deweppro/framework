@@ -1,8 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep;
 
-use Dewep\Handlers\BlankApp;
+use Dewep\Exception\RuntimeException;
 use Dewep\Handlers\Error;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
@@ -13,14 +13,11 @@ use Dewep\Interfaces\ApplicationInterface;
  *
  * @package Dewep
  */
-class Application extends BlankApp implements ApplicationInterface
+class Application implements ApplicationInterface
 {
-    /** @var Request */
-    protected $request;
-    /** @var Response */
-    protected $response;
-
-    /** @var array */
+    /**
+     * @var array
+     */
     protected static $allowHeaders = [
         'Content-Type' => null,
     ];
@@ -30,8 +27,6 @@ class Application extends BlankApp implements ApplicationInterface
      */
     public function __construct()
     {
-        parent::__construct();
-
         Error::bootstrap();
     }
 
@@ -43,11 +38,11 @@ class Application extends BlankApp implements ApplicationInterface
         $allowHeaders = Config::get('allowHeaders', []);
 
         $headers = [
-            'Access-Control-Allow-Origin' => Config::get('domain', '*'),
-            'Access-Control-Allow-Methods' => 'HEAD,OPTIONS,GET,POST,PUT,DELETE,TRACE',
-            'Access-Control-Max-Age' => 0,
+            'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
+            'Access-Control-Allow-Methods'     => 'HEAD,OPTIONS,GET,POST,PUT,DELETE,TRACE',
+            'Access-Control-Max-Age'           => 0,
             'Access-Control-Allow-Credentials' => 'true',
-            'Access-Control-Allow-Headers' => implode(
+            'Access-Control-Allow-Headers'     => implode(
                 ', ',
                 array_keys(
                     array_replace(
@@ -56,8 +51,8 @@ class Application extends BlankApp implements ApplicationInterface
                     )
                 )
             ),
-            'Cache-Control' => 'no-cache',
-            'Pragma' => 'no-cache',
+            'Cache-Control'                    => 'no-cache',
+            'Pragma'                           => 'no-cache',
         ];
 
         foreach ($headers as $key => $value) {
@@ -71,22 +66,6 @@ class Application extends BlankApp implements ApplicationInterface
     }
 
     /**
-     * @return Request
-     */
-    public function request(): Request
-    {
-        return $this->request;
-    }
-
-    /**
-     * @return Response
-     */
-    public function response(): Response
-    {
-        return $this->response;
-    }
-
-    /**
      * @throws \Exception
      */
     public function bootstrap()
@@ -95,52 +74,42 @@ class Application extends BlankApp implements ApplicationInterface
 
         /**
          * routes
-         *
-         * In a config it is possible to specify an array
-         * of references and the controllers processing them.
-         *
-         * @example
-         *         routes:
-         *              /:
-         *                  POST,GET: IndexController::index
-         *
-         * Or specify the controller that handles routing.
-         *
-         * @example
-         *         routes: RoutingHelper::build
-         *
-         * @var array|string $routes
          */
         $routes = Config::get('routes', []);
         if (is_string($routes)) {
-            $routes = Builder::make($this, $routes, null, []);
+            $routes = Builder::make($routes);
+            if (!is_array($routes)) {
+                throw new RuntimeException('The error handling routing.');
+            }
         }
 
         /**
          *  Build Request+Response
          */
-        $this->request = Request::bootstrap($routes);
-        $this->response = Response::bootstrap();
+        $request = Request::bootstrap($routes);
+        $response = Response::bootstrap();
+
+        Container::set('request', $request);
+        Container::set('response', $response);
 
         /**
          * middleware
          */
         $middleware = Config::get('middleware', []);
 
-        Builder::makes($this, $middleware['before'] ?? [], 'before');
+        Builder::makes($middleware['before'] ?? [], 'before');
 
         /**
          * call controllers
          */
-        $content = $this->router();
+        $content = $this->router($request);
         if ($content instanceof Response) {
-            $response = $content;
+            Container::set('response', $content);
         } else {
-            $response = $this->response()
-                ->setBody($content, Config::get('response'));
+            $response->setBody($content, Config::get('response'));
         }
 
-        Builder::makes($this, $middleware['after'] ?? [], 'after');
+        Builder::makes($middleware['after'] ?? [], 'after');
 
         $err = ob_get_contents();
         ob_end_flush();
@@ -152,21 +121,23 @@ class Application extends BlankApp implements ApplicationInterface
             Container::get('logger')->warning($err);
         }
 
-        echo $response;
+        echo Container::get('response');
     }
 
     /**
+     * @param \Dewep\Http\Request $request
+     *
      * @return mixed
      * @throws \Exception
      */
-    protected function router()
+    protected function router(Request $request)
     {
         /** @var array $attributes */
-        $attributes = $this->request()->route->getAttributes();
+        $attributes = $request->route->getAttributes();
 
-        /** @var string $heandler */
-        $heandler = $this->request()->route->getHandler();
+        /** @var string $handler */
+        $handler = $request->route->getHandler();
 
-        return $this->call($heandler, $attributes);
+        return Builder::call($handler, $attributes);
     }
 }

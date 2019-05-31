@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Interfaces;
 
@@ -10,10 +10,9 @@ namespace Dewep\Interfaces;
 interface ProviderInterface
 {
     /**
-     * @param ApplicationInterface $app
-     * @param array                $config
+     * @param array $config
      *
      * @return mixed
      */
-    public function handler(ApplicationInterface $app, array $config);
+    public function handler(array $config);
 }

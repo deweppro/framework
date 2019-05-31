@@ -1,5 +1,4 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Dewep\Interfaces;
 
@@ -8,6 +7,7 @@ use Dewep\Console\Output;
 
 /**
  * Interface ConsoleInterface
+ *
  * @package Dewep\Interfaces
  */
 interface ConsoleInterface
@@ -19,13 +19,15 @@ interface ConsoleInterface
 
     /**
      * @param Input $input
+     *
      * @return mixed
      */
     public function setup(Input $input);
 
     /**
-     * @param Input $input
+     * @param Input  $input
      * @param Output $output
+     *
      * @return mixed
      */
     public function handler(Input $input, Output $output);

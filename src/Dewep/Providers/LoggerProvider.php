@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Providers;
 
 use Dewep\Config;
-use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ProviderInterface;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -16,10 +15,12 @@ use Monolog\Logger;
 class LoggerProvider implements ProviderInterface
 {
     /**
-     * @return Logger
+     * @param array $config
+     *
+     * @return mixed|\Monolog\Logger
      * @throws \Exception
      */
-    public function handler(ApplicationInterface $app, array $config)
+    public function handler(array $config)
     {
         $debug = !empty($config['debug'] ?? false) ? Logger::DEBUG : Logger::INFO;
         $logfile = sprintf(

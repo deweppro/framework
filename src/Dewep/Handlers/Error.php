@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Handlers;
 
@@ -61,7 +61,7 @@ class Error
 
         $response = [
             'errorMessage' => $str,
-            'errorCode' => $no,
+            'errorCode'    => $no,
         ];
 
         $file = explode('/', $file);
@@ -98,7 +98,14 @@ class Error
             $code = $e->getCode();
         }
 
-        self::build($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTrace(), $code);
+        self::build(
+            $e->getCode(),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTrace(),
+            $code
+        );
     }
 
 }

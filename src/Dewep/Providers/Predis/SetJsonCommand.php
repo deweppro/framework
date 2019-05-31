@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Providers\Predis;
 
@@ -11,11 +11,19 @@ namespace Dewep\Providers\Predis;
  */
 class SetJsonCommand extends \Predis\Command\Command
 {
+    /**
+     * @return string
+     */
     public function getId()
     {
         return 'SETEX';
     }
 
+    /**
+     * @param array $arguments
+     *
+     * @return array
+     */
     protected function filterArguments(array $arguments)
     {
         $arguments[2] = json_encode($arguments[2]);

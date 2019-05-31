@@ -1,9 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Middleware\AbTest;
 
 use Dewep\Config;
-use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Middleware\Auth\Cookies;
 use Dewep\Middleware\BaseClass;
 
@@ -18,12 +17,11 @@ class AbTest extends BaseClass
     public $actionId = 0;
 
     /**
-     * @param ApplicationInterface $app
-     * @param array                $params
+     * @param array $params
      *
      * @return mixed|void
      */
-    public function before(ApplicationInterface $app, array $params)
+    public function before(array $params)
     {
         $this->setParams($params);
 
@@ -37,17 +35,6 @@ class AbTest extends BaseClass
             Cookies::setData(self::TEST, $this->testId);
             Cookies::setData(self::ACTION, $this->actionId);
         }
-    }
-
-    /**
-     * @param ApplicationInterface $app
-     * @param array                $params
-     *
-     * @return mixed|void
-     */
-    public function after(ApplicationInterface $app, array $params)
-    {
-
     }
 
     /**
@@ -67,5 +54,15 @@ class AbTest extends BaseClass
         }
 
         return true;
+    }
+
+    /**
+     * @param array $params
+     *
+     * @return mixed|void
+     */
+    public function after(array $params)
+    {
+
     }
 }

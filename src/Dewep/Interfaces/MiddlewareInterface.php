@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Dewep\Interfaces;
 
@@ -11,19 +11,17 @@ interface MiddlewareInterface
 {
 
     /**
-     * @param ApplicationInterface $app
-     * @param array                $params
+     * @param array $params
      *
      * @return mixed
      */
-    public function before(ApplicationInterface $app, array $params);
+    public function before(array $params);
 
     /**
-     * @param ApplicationInterface $app
-     * @param array                $params
+     * @param array $params
      *
      * @return mixed
      */
-    public function after(ApplicationInterface $app, array $params);
+    public function after(array $params);
 
 }
