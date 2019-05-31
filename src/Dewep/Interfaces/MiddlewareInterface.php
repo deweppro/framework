@@ -2,6 +2,9 @@
 
 namespace Dewep\Interfaces;
 
+use Dewep\Http\Request;
+use Dewep\Http\Response;
+
 /**
  * Interface MiddlewareInterface
  *
@@ -11,17 +14,21 @@ interface MiddlewareInterface
 {
 
     /**
-     * @param array $params
+     * @param \Dewep\Http\Request  $request
+     * @param \Dewep\Http\Response $response
+     * @param array                $params
      *
      * @return mixed
      */
-    public function before(array $params);
+    public function before(Request $request, Response $response, array $params);
 
     /**
-     * @param array $params
+     * @param \Dewep\Http\Request  $request
+     * @param \Dewep\Http\Response $response
+     * @param array                $params
      *
      * @return mixed
      */
-    public function after(array $params);
+    public function after(Request $request, Response $response, array $params);
 
 }

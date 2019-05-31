@@ -2,7 +2,8 @@
 
 namespace Dewep\Middleware\Auth;
 
-use Dewep\Container;
+use Dewep\Http\Request;
+use Dewep\Http\Response;
 use Dewep\Middleware\BaseClass;
 
 /**
@@ -40,25 +41,6 @@ class Cookies extends BaseClass
     private static $changed = false;
 
     /**
-     * @var \Dewep\Http\Request
-     */
-    protected $request;
-
-    /**
-     * @var \Dewep\Http\Response
-     */
-    protected $response;
-
-    /**
-     * Cookies constructor.
-     */
-    public function __construct()
-    {
-        $this->request = Container::get('request');
-        $this->response = Container::get('response');
-    }
-
-    /**
      * @param string $key
      *
      * @return mixed|null
@@ -90,12 +72,14 @@ class Cookies extends BaseClass
     }
 
     /**
-     * @param array $params
+     * @param \Dewep\Http\Request  $request
+     * @param \Dewep\Http\Response $response
+     * @param array                $params
      *
      * @return bool|mixed
      * @throws \Exception
      */
-    public function before(array $params)
+    public function before(Request $request, Response $response, array $params)
     {
         $this->setParams($params);
 
@@ -104,7 +88,7 @@ class Cookies extends BaseClass
             throw new \Exception('Secret key for JWT authorization not found!');
         }
 
-        $cookie = $this->request->headers->cookie->get(
+        $cookie = $request->headers->cookie->get(
             $this->getParam('name', 'x-user-token'),
             ''
         );
@@ -164,18 +148,20 @@ class Cookies extends BaseClass
     }
 
     /**
-     * @param array $params
+     * @param \Dewep\Http\Request  $request
+     * @param \Dewep\Http\Response $response
+     * @param array                $params
      *
      * @return bool|mixed
      * @throws \Exception
      */
-    public function after(array $params)
+    public function after(Request $request, Response $response, array $params)
     {
         $this->setParams($params);
 
         if (!empty(self::$payload)) {
 
-            $this->response->headers->setCookies(
+            $response->headers->setCookies(
                 $this->getParam('name', 'x-user-token'),
                 $this->buildToken(),
                 self::$header['exp'],

@@ -101,7 +101,7 @@ class Application implements ApplicationInterface
          */
         $middleware = Config::get('middleware', []);
 
-        Builder::makes($middleware['before'] ?? [], 'before');
+        $this->middleware($request, $response, $middleware['before'] ?? [], 'before');
 
         /**
          * call controllers
@@ -113,7 +113,7 @@ class Application implements ApplicationInterface
             $response->setBody($content, Config::get('response'));
         }
 
-        Builder::makes($middleware['after'] ?? [], 'after');
+        $this->middleware($request, $response, $middleware['after'] ?? [], 'after');
 
         $err = ob_get_contents();
         ob_end_flush();
@@ -126,6 +126,32 @@ class Application implements ApplicationInterface
         }
 
         echo Container::get('response');
+    }
+
+    /**
+     * @param \Dewep\Http\Request  $request
+     * @param \Dewep\Http\Response $response
+     * @param array                $middlewares
+     * @param string               $handler
+     */
+    protected function middleware(Request $request, Response $response, array $middlewares, string $handler)
+    {
+        foreach ($middlewares as $name => $params) {
+            $class = $params['_'] ?? null;
+            unset($params['_']);
+
+            if (!empty($class) && is_string($class)) {
+                Builder::make($class, $handler, [$request, $response, $params]);
+            } else {
+                Container::get('logger')->warning(
+                    sprintf(
+                        'Bad middleware in %s:%s',
+                        $name,
+                        $handler
+                    )
+                );
+            }
+        }
     }
 
     /**
