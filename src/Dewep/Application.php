@@ -72,11 +72,6 @@ class Application implements ApplicationInterface
     {
         ob_start();
 
-        /**
-         * Build Response
-         */
-        $response = Response::bootstrap();
-        Container::set('response', $response);
 
         /**
          * routes
@@ -94,6 +89,12 @@ class Application implements ApplicationInterface
          */
         $request = Request::bootstrap($routes);
         Container::set('request', $request);
+
+        /**
+         * Build Response
+         */
+        $response = Response::bootstrap();
+        Container::set('response', $response);
 
         /**
          * middleware

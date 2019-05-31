@@ -78,7 +78,7 @@ class Error
         }
 
         /** @var Response $res */
-        $res = Container::get('response');
+        $res = Response::bootstrap();
         $res->setBody($response, Config::get('response'));
         $res->setStatusCode($httpCode ?? 500);
         echo $res;
