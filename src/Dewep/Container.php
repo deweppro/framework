@@ -42,7 +42,7 @@ class Container extends Registry
             $obj = Builder::make(
                 $providers[$key]['_'],
                 null,
-                $providers[$key]
+                [$providers[$key]]
             );
             if ($obj !== false) {
                 return $obj;
