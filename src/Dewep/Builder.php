@@ -44,7 +44,7 @@ class Builder
 
         unset($params['_']);
 
-        return self::call([$call, $method], $params);
+        return self::call([new $call(), $method], $params);
     }
 
     /**
