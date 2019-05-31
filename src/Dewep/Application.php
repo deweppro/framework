@@ -142,6 +142,8 @@ class Application implements ApplicationInterface
         /** @var string $handler */
         $handler = $request->route->getHandler();
 
+        array_unshift($attributes, $request);
+
         return Builder::call($handler, $attributes);
     }
 }
