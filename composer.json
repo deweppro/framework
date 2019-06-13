@@ -36,9 +36,7 @@
         "deweppro/http": "^2.0",
         "deweppro/patterns": "^2.0",
         "monolog/monolog": "^1.0",
-        "nesbot/carbon": "^2.10",
         "psr/log": "^1.1",
-        "symfony/console": "^4.2",
         "symfony/yaml": "^3.4",
         "predis/predis": "^1.1",
         "twig/twig": "^2.6"
