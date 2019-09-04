@@ -25,8 +25,11 @@ class Container extends Registry
         }
 
         $load = self::autoload($key);
+        if($load !== null){
+            return self::$__registry[self::__class()][$key] = $load;
+        }
 
-        return $load ?? $default;
+        return $default;
     }
 
     /**
