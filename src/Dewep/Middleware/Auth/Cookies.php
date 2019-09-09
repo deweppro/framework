@@ -61,6 +61,23 @@ class Cookies extends BaseClass
     }
 
     /**
+     * @return array
+     */
+    public static function getAll(): array
+    {
+        return self::$payload;
+    }
+
+    /**
+     *
+     */
+    public static function flush()
+    {
+        self::$payload = [];
+        self::$changed = true;
+    }
+
+    /**
      * @param int $len
      *
      * @return string
