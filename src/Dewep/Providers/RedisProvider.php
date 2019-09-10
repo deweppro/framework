@@ -23,9 +23,9 @@ class RedisProvider implements ProviderInterface
     {
         $client = new \Predis\Client(
             [
-                'scheme' => $config['host'] ?? '127.0.0.1',
-                'host'   => (int)($config['port'] ?? 6379),
-                'port'   => $config['scheme'] ?? 'tcp',
+                'scheme' => (string)($config['scheme'] ?? 'tcp'),
+                'host'   => (string)($config['host'] ?? '127.0.0.1'),
+                'port'   => (int)($config['port'] ?? 6379),
             ]
         );
 
