@@ -4,8 +4,11 @@ namespace Dewep;
 
 use Dewep\Exception\RuntimeException;
 use Dewep\Handlers\Error;
+use Dewep\Http\HeaderBag;
+use Dewep\Http\HeaderTypeBag;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
+use Dewep\Http\SessionBag;
 use Dewep\Interfaces\ApplicationInterface;
 
 /**
@@ -16,13 +19,6 @@ use Dewep\Interfaces\ApplicationInterface;
 class Application implements ApplicationInterface
 {
     /**
-     * @var array
-     */
-    protected static $allowHeaders = [
-        'Content-Type' => null,
-    ];
-
-    /**
      * Application constructor.
      */
     public function __construct()
@@ -31,13 +27,17 @@ class Application implements ApplicationInterface
     }
 
     /**
-     *
+     * @return array
      */
-    public static function cors()
+    protected function cors()
     {
         $allowHeaders = Config::get('allowHeaders', []);
+        $defaultHeaders = [
+            HeaderTypeBag::CONTENT_TYPE,
+            HeaderTypeBag::ACCEPT_TYPE,
+        ];
 
-        $headers = [
+        return [
             'Access-Control-Allow-Origin'      => Config::get('domain', '*'),
             'Access-Control-Allow-Methods'     => 'HEAD,OPTIONS,GET,POST,PUT,DELETE,TRACE',
             'Access-Control-Max-Age'           => 0,
@@ -45,87 +45,110 @@ class Application implements ApplicationInterface
             'Access-Control-Allow-Headers'     => implode(
                 ', ',
                 array_keys(
-                    array_replace(
-                        array_flip($allowHeaders),
-                        static::$allowHeaders
+                    array_flip(
+                        array_merge(
+                            $defaultHeaders,
+                            $allowHeaders
+                        )
                     )
                 )
             ),
             'Cache-Control'                    => 'no-cache',
             'Pragma'                           => 'no-cache',
         ];
-
-        foreach ($headers as $key => $value) {
-            header(sprintf('%s: %s', $key, $value), true);
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            http_response_code(200);
-            exit(0);
-        }
     }
 
     /**
+     * @throws \Dewep\Exception\RuntimeException
+     * @throws \Dewep\Exception\UndefinedFormatException
      * @throws \Exception
      */
     public function bootstrap()
     {
         ob_start();
 
-
-        /**
-         * routes
-         */
-        $routes = Config::get('routes', []);
-        if (is_string($routes)) {
-            $routes = Builder::make($routes);
-            if (!is_array($routes)) {
-                throw new RuntimeException('The error handling routing.');
-            }
-        }
-
         /**
          *  Build Request
          */
-        $request = Request::bootstrap($routes);
+        $request = Request::initialize();
         Container::set('request', $request);
+
+        /**
+         * fix
+         */
+        Config::exist('domain', $request->getHeader()->getHost());
+        Config::exist('response', $request->getHeader()->getAcceptType());
 
         /**
          * Build Response
          */
-        $response = Response::bootstrap();
+        $response = new Response(new HeaderBag($this->cors()), $request->getCookie());
         Container::set('response', $response);
 
         /**
-         * middleware
+         *
          */
-        $middleware = Config::get('middleware', []);
+        if ($request->getServer()->isOptions() === false) {
 
-        $this->middleware($request, $response, $middleware['before'] ?? [], 'before');
+            /**
+             * session
+             */
+            $session = Config::get('session', []);
 
-        /**
-         * call controllers
-         */
-        $content = $this->router($request);
-        if ($content instanceof Response) {
-            Container::set('response', $content);
-        } else {
-            $response->setBody($content, Config::get('response'));
+            $request->setSession(
+                SessionBag::initialize(
+                    $session['_'] ?? null,
+                    (int)($session['lifetime'] ?? 3600),
+                    (string)Config::get('domain', '')
+                )
+            );
+
+            /**
+             * routes
+             */
+            $routes = Config::get('routes', []);
+            if (is_string($routes)) {
+                $routes = Builder::make($routes);
+                if (!is_array($routes)) {
+                    throw new RuntimeException('The error handling routing.');
+                }
+            }
+            $request->getRoute()->replace($routes)->bind();
+
+            /**
+             * middleware
+             */
+            $middleware = Config::get('middleware', []);
+
+            $this->middleware($request, $response, $middleware['before'] ?? [], 'before');
+
+            /**
+             * call controllers
+             */
+            $content = $this->router($request);
+            if ($content instanceof Response) {
+                Container::set('response', $content);
+            } else {
+                $response->setContentType((string)Config::get('response'));
+                $response->setBody($content);
+            }
+
+            $this->middleware($request, $response, $middleware['after'] ?? [], 'after');
+
+            /**
+             * errors
+             */
+            $err = ob_get_contents();
+            if (!empty($err)) {
+                Container::get('logger')->warning($err);
+            }
         }
 
-        $this->middleware($request, $response, $middleware['after'] ?? [], 'after');
-
-        $err = ob_get_contents();
         ob_end_clean();
 
-        /**
-         * errors
-         */
-        if (!empty($err)) {
-            Container::get('logger')->warning($err);
-        }
-
-        echo Container::get('response');
+        /** @var Response $response */
+        Container::get('response')->send();
+        exit(0);
     }
 
     /**
@@ -163,10 +186,10 @@ class Application implements ApplicationInterface
     protected function router(Request $request)
     {
         /** @var array $attributes */
-        $attributes = $request->route->getAttributes();
+        $attributes = $request->getRoute()->getAttributes();
 
         /** @var string $handler */
-        $handler = $request->route->getHandler();
+        $handler = $request->getRoute()->getHandler();
 
         array_unshift($attributes, $request);
 

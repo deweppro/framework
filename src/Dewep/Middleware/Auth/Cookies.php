@@ -105,7 +105,7 @@ class Cookies extends BaseClass
             throw new \Exception('Secret key for JWT authorization not found!');
         }
 
-        $cookie = $request->headers->cookie->get(
+        $cookie = $request->getCookie()->get(
             $this->getParam('name', 'x-user-token'),
             ''
         );
@@ -178,14 +178,10 @@ class Cookies extends BaseClass
 
         if (!empty(self::$payload)) {
 
-            $response->headers->setCookies(
+            $response->getCookie()->set(
                 $this->getParam('name', 'x-user-token'),
                 $this->buildToken(),
-                self::$header['exp'],
-                '/',
-                $this->getParam('domain', 'local'),
-                false,
-                true
+                self::$header['exp']
             );
 
             return true;
