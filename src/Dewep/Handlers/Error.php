@@ -77,12 +77,13 @@ class Error
             $response['errorFile'] = $file.':'.$line;
         }
 
-        /** @var Response $res */
-        Response::initialize()
-            ->setBody($response)
-            ->setContentType(Config::get('response'))
-            ->setStatusCode($httpCode ?? 500)
-            ->send();
+        HttpCodeHandler::make(
+            Response::initialize()
+                ->setBody($response)
+                ->setContentType(Config::get('response'))
+                ->setStatusCode($httpCode)
+        )->send();
+        exit(0);
     }
 
     /**
