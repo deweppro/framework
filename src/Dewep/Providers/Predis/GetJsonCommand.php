@@ -20,7 +20,7 @@ class GetJsonCommand extends \Predis\Command\Command
     }
 
     /**
-     * @param $data
+     * @param string $data
      *
      * @return mixed|string
      */

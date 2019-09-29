@@ -19,8 +19,8 @@ class Error
      */
     public static function bootstrap()
     {
-        set_error_handler('\\Dewep\\Handlers\\Error::error');
-        set_exception_handler('\\Dewep\\Handlers\\Error::exception');
+        set_error_handler(Error::class.'::error');
+        set_exception_handler(Error::class.'::exception');
 
         ini_set('display_errors', '1');
         error_reporting(-1);
@@ -78,11 +78,11 @@ class Error
         }
 
         /** @var Response $res */
-        $res = Response::bootstrap();
-        $res->setBody($response, Config::get('response'));
-        $res->setStatusCode($httpCode ?? 500);
-        echo $res;
-        exit(0);
+        Response::initialize()
+            ->setBody($response)
+            ->setContentType(Config::get('response'))
+            ->setStatusCode($httpCode ?? 500)
+            ->send();
     }
 
     /**

@@ -1,8 +1,13 @@
 debug: true
 domain: main.domain
-response: json
+response: application/json
 allowHeaders:
   - X-JWT
+
+#-------------------------------------------
+session:
+  _: null
+  lifetime: 3600
 
 #-------------------------------------------
 routes:
@@ -27,7 +32,6 @@ middleware:
     debug:
       _: Dewep\Middleware\Debug
       name: app.log
-
 
 #-------------------------------------------
 providers:

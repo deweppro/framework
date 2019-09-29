@@ -1,6 +1,6 @@
 parameters:
 	ignoreErrors:
-#		- '#.*#'
+		- "#Casting to string something that's already string#"
 	autoload_directories:
 		- %rootDir%/../../../src
 		- %rootDir%/../../../tests

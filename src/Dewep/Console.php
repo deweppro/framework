@@ -78,7 +78,7 @@ class Console implements ApplicationInterface
         }
 
         $object->setup($this->input);
-        $this->input->build();
+        $this->input->initialize();
         $object->handler($this->input, $this->output);
 
         exit(0);
