@@ -4,6 +4,7 @@ namespace Dewep;
 
 use Dewep\Exception\RuntimeException;
 use Dewep\Handlers\Error;
+use Dewep\Handlers\HttpCodeHandler;
 use Dewep\Http\HeaderBag;
 use Dewep\Http\HeaderTypeBag;
 use Dewep\Http\Request;
@@ -24,6 +25,7 @@ class Application implements ApplicationInterface
     public function __construct()
     {
         Error::bootstrap();
+        HttpCodeHandler::setHandlers(Config::get('codes', []));
     }
 
     /**
@@ -146,8 +148,7 @@ class Application implements ApplicationInterface
 
         ob_end_clean();
 
-        /** @var Response $response */
-        Container::get('response')->send();
+        HttpCodeHandler::make(Container::get('response'))->send();
         exit(0);
     }
 
