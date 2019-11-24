@@ -1,40 +1,33 @@
-## API Framework Dewep
+# API Framework Dewep
 
-### Quick start:
+skeleton: https://github.com/deweppro/framework-api-skeleton
+
+## How to initialize an instance:
+
 ```php
-<?php
+<?php declare(strict_types=1);
 
 require_once './../vendor/autoload.php';
 
-use Dewep\Application;
-use Dewep\Config;
+Dewep\Config::setConfigPath(__DIR__.'/../config.yml');
 
-
-Config::fromYaml(Config::dirRoot().'/config.yml');
-Application::cors();
-(new Application())->bootstrap();
+(new Dewep\Application())->bootstrap();
 ```
 
-### A sample configuration file [config.yml]:
+## A sample configuration file [config.yml]:
 To display in the response file in which the error occurred: 
 ```yaml
 debug: true
 ```
 
+The answer format for scalar answers is `text/html; charset=utf-8`, for non - scalar answers::
+```yaml
+response: application/json
+```
 
-The response format of the standard options:
-```yaml
-response: json | xml | html
-```
-If the response want to see your response format, then use your handler:
-```yaml
-response:
-    head: 'application/json; charset=UTF-8'
-    handler: Dewep\Parsers\Response::json
-```
-For processing routes a request, route support attribute - __/{user}/name__ - then you can use 
-them in your code - __$request->getAttribute('user')__ . The request method with a comma
- __DELETE, GET, OPTIONS, PATCH, POST, PUT__ - the handler in the format __CLASS::method__ . Example: `$response = (new CLASS($request, $response))->method($attribute1, $attribute2, ....)` 
+### Routing
+
+You can add routes through the config file
 
 ```yaml
 routes:
@@ -43,23 +36,60 @@ routes:
   /:
     GET: Dewep\Demo::home
 ```
-For pre and post processing queries and responses you can use `middleware`, 
-each of which must contain a method of the host link 2 parameter: 
-`(new middleware())->before(ApplicationInterface $app, array $params)` - before calling the application, and
-`(new middleware())->after(ApplicationInterface $app, array $params)` - after a method invocation of the application.
-```yaml
-middleware:
-  request:
-    Dewep\Middleware\Auth:
-      cookie: x-token
 
-  response:
-    Dewep\Middleware\Debug:
-      name: app.log
+Where the placeholder `{user}` will be passed to the controller as a variable:
+
+```php
+public function demo(Request $request, string $user) {}
 ```
 
-For the realization of unrelated code, use the services providers, 
-which can be activated at the moment they are first accessed in your code - `Container::get('mysql')->...`
+Or you can specify a route generator, which must contain a method - `public function handler()`
+
+```yaml
+routes: \App\Routes
+```
+
+```php
+class Routes
+{
+    public function handler()
+    {
+        $routes = [];
+
+        $routes['/{user}/name']['GET'] = 'Dewep\Demo::demo';
+        $routes['/{user}/name']['POST'] = 'Dewep\Demo::demo';
+        $routes['/{user}/name']['PUT'] = 'Dewep\Demo::demo';
+        
+        $routes['/']['GET'] = 'Dewep\Demo::home';
+
+        return $routes;
+    }
+}
+```
+
+### Middleware
+
+You can specify the middleware to be executed before and after the main code is executed.
+Middleware should match the interface **\Dewep\Interfaces\MiddlewareInterface**
+
+```yaml
+middleware:
+    before:
+        cookie: &CookieUserAuth
+            _: \Dewep\Middleware\Auth\Cookies
+            name: sess
+            secret: 'demo'
+            exp: 6000000
+            domain: localhost
+
+    after:
+        cookie: *CookieUserAuth
+```
+
+### Dependency injection
+
+For dependency injection you can create providers that must match the interface **Dewep\Interfaces\ProviderInterface**
+
 ```yaml
 providers:
   logger:
@@ -76,9 +106,51 @@ providers:
     login: default
     password: default
 ```
-to initialize should be method - _handler(ApplicationInterface $app, array $config)_
-Example: `(new provider())->handler($app, $config)`
-### Application framework
+
+Access to providers occurs through the Container: `Container::get('logger')->...`
+
+### Console
+
+Work with the console occurs through the console application
+
+```bash
+#!/usr/bin/env php
+<?php
+
+include_once __DIR__.'/vendor/autoload.php';
+
+\Dewep\Config::setConfigPath(__DIR__.'/config.yml');
+
+(new Dewep\Console())->bootstrap();
+```
+
+The console command is added to the config file as follows: **command name: class**
+
+```yaml
+console:
+    app.restore: \Dewep\Handlers\Consoles\CreateDirs
+```
+
+All command classes must match the interface **\Dewep\Interfaces\ConsoleInterface**
+
+Executing a command with parameters:
+
+```bash
+./console app.restore --demo=hello
+```
+
+View a list of commands:
+
+```bash
+./console
+```
+```bash
+Commands list:  
+        app.restore: Restore the system directory structure.
+        ....
+```
+
+### Directory structure
 
 ```bash
 root |
