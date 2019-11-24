@@ -19,6 +19,7 @@ use Dewep\Interfaces\ApplicationInterface;
  */
 class Application implements ApplicationInterface
 {
+    const DEFAULT_CONTENT_TYPE = 'text/html; charset=utf-8';
     /**
      * Application constructor.
      */
@@ -131,7 +132,11 @@ class Application implements ApplicationInterface
             if ($content instanceof Response) {
                 Container::set('response', $content);
             } else {
-                $response->setContentType((string)Config::get('response'));
+                $response->setContentType(
+                    is_scalar($content) ?
+                        self::DEFAULT_CONTENT_TYPE :
+                        (string)Config::get('response')
+                );
                 $response->setBody($content);
             }
 
