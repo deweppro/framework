@@ -80,7 +80,7 @@ class Error
         HttpCodeHandler::make(
             Response::initialize()
                 ->setBody($response)
-                ->setContentType(Config::get('response'))
+                ->setContentType((string)Config::get('response'))
                 ->setStatusCode($httpCode)
         )->send();
         exit(0);
