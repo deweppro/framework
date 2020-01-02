@@ -7,10 +7,6 @@ use Dewep\Http\Response;
 use Dewep\Middleware\BaseClass;
 
 /**
- * Class CookieUserAuth
- *
- * @package Dewep\Middleware\CookieUserAuth
- *
  * @example :
  * Dewep\Middleware\CookieUserAuth:
  *          alg: gost-crypto
@@ -22,22 +18,16 @@ class Cookies extends BaseClass
 {
     const ALGO_DEFAULT = 'gost-crypto';
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private static $payload = [];
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private static $header = [
         'alg' => self::ALGO_DEFAULT,
         'exp' => 0,
     ];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private static $changed = false;
 
     /**
@@ -119,11 +109,14 @@ class Cookies extends BaseClass
             return false;
         }
 
-        @list($header, $payload, $sign) = $tokenData;
+        [$header, $payload, $sign] = $tokenData;
 
         $headerData = $this->base64JsonDecode($header);
         if (
-            ($headerData['alg'] ?? '') !== $this->getParam('alg', self::ALGO_DEFAULT) ||
+            ($headerData['alg'] ?? '') !== $this->getParam(
+                'alg',
+                self::ALGO_DEFAULT
+            ) ||
             (int)($headerData['exp'] ?? 0) < time()
         ) {
             self::$payload = [];
@@ -154,7 +147,7 @@ class Cookies extends BaseClass
      *
      * @return array
      */
-    private function base64JsonDecode(string $str): array
+    protected function base64JsonDecode(string $str): array
     {
         $data = json_decode((string)base64_decode($str), true);
         if (!is_array($data)) {
@@ -181,7 +174,9 @@ class Cookies extends BaseClass
             $response->getCookie()->set(
                 $this->getParam('name', 'x-user-token'),
                 $this->buildToken(),
-                self::$header['exp']
+                self::$header['exp'],
+                '/',
+                $this->getParam('domain')
             );
 
             return true;
@@ -226,7 +221,7 @@ class Cookies extends BaseClass
      *
      * @return string
      */
-    private function base64JsonEncode(array $data): string
+    protected function base64JsonEncode(array $data): string
     {
         $str = base64_encode((string)json_encode($data));
         if (!is_string($str)) {
