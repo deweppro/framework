@@ -169,7 +169,7 @@ class Cookies extends BaseClass
     {
         $this->setParams($params);
 
-        if (!empty(self::$payload)) {
+        if (self::$changed) {
 
             $response->getCookie()->set(
                 $this->getParam('name', 'x-user-token'),
