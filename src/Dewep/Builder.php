@@ -13,7 +13,7 @@ final class Builder
         if (!empty($class)) {
             foreach ($class as $call => $params) {
                 $params = is_array($params) ? $params : [$params];
-                self::make((string) $call, $handler, $params);
+                self::make((string)$call, $handler, $params);
             }
         }
     }

@@ -40,7 +40,7 @@ final class HttpCodeHandler
             ->setContentType(
                 is_scalar($content) ?
                     Application::DEFAULT_CONTENT_TYPE :
-                    (string) Config::get('response')
+                    (string)Config::get('response')
             );
     }
 }

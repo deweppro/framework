@@ -24,7 +24,7 @@ final class Yaml
         if (file_exists($tempFileName)) {
             $yaml = include $tempFileName;
         } else {
-            $yaml = Y::parse((string) file_get_contents($path));
+            $yaml = Y::parse((string)file_get_contents($path));
             if (is_writeable($tempDir)) {
                 file_put_contents(
                     $tempFileName,

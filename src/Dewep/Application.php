@@ -62,8 +62,8 @@ final class Application implements ApplicationInterface
             $request->setSession(
                 SessionBag::initialize(
                     $session['_'] ?? null,
-                    (int) ($session['lifetime'] ?? 3600),
-                    (string) Config::get('domain', '')
+                    (int)($session['lifetime'] ?? 3600),
+                    (string)Config::get('domain', '')
                 )
             );
 
@@ -101,7 +101,7 @@ final class Application implements ApplicationInterface
                 $response->setContentType(
                     is_scalar($content) ?
                         self::DEFAULT_CONTENT_TYPE :
-                        (string) Config::get('response')
+                        (string)Config::get('response')
                 );
                 $response->setBody($content);
             }

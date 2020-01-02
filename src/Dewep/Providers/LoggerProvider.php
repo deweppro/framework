@@ -21,7 +21,7 @@ final class LoggerProvider implements ProviderInterface
             $config['filename'] ?? 'app.log'
         );
 
-        $appname = (string) ($config['name'] ?? 'app');
+        $appname = (string)($config['name'] ?? 'app');
         $logger  = new Logger($appname);
 
         try {

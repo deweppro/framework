@@ -16,9 +16,9 @@ final class RedisProvider implements ProviderInterface
     {
         $client = new Client(
             [
-                'scheme' => (string) ($config['scheme'] ?? 'tcp'),
-                'host'   => (string) ($config['host'] ?? '127.0.0.1'),
-                'port'   => (int) ($config['port'] ?? 6379),
+                'scheme' => (string)($config['scheme'] ?? 'tcp'),
+                'host'   => (string)($config['host'] ?? '127.0.0.1'),
+                'port'   => (int)($config['port'] ?? 6379),
             ]
         );
 
