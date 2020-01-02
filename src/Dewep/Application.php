@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep;
 
@@ -12,17 +14,10 @@ use Dewep\Http\Response;
 use Dewep\Http\SessionBag;
 use Dewep\Interfaces\ApplicationInterface;
 
-/**
- * Class Application
- *
- * @package Dewep
- */
-class Application implements ApplicationInterface
+final class Application implements ApplicationInterface
 {
-    const DEFAULT_CONTENT_TYPE = 'text/html; charset=utf-8';
-    /**
-     * Application constructor.
-     */
+    public const DEFAULT_CONTENT_TYPE = 'text/html; charset=utf-8';
+
     public function __construct()
     {
         Error::bootstrap();
@@ -30,9 +25,110 @@ class Application implements ApplicationInterface
     }
 
     /**
-     * @return array
+     * @throws \Dewep\Exception\HttpException
+     * @throws \Dewep\Exception\RuntimeException
+     * @throws \Dewep\Exception\UndefinedFormatException
      */
-    protected function cors()
+    public function bootstrap(): void
+    {
+        ob_start();
+
+        /**
+         *  Build Request.
+         */
+        $request = Request::initialize();
+        Container::set('request', $request);
+
+        // fix
+        Config::exist('domain', $request->getHeader()->getHost());
+        Config::exist('response', $request->getHeader()->getAcceptType());
+
+        /**
+         * Build Response.
+         */
+        $response = new Response(
+            new HeaderBag($this->cors()),
+            $request->getCookie()
+        );
+        Container::set('response', $response);
+
+        if (false === $request->getServer()->isOptions()) {
+
+            /**
+             * session.
+             */
+            $session = Config::get('session', []);
+
+            $request->setSession(
+                SessionBag::initialize(
+                    $session['_'] ?? null,
+                    (int)($session['lifetime'] ?? 3600),
+                    (string)Config::get('domain', '')
+                )
+            );
+
+            /**
+             * routes.
+             */
+            $routes = Config::get('routes', []);
+            if (is_string($routes)) {
+                $routes = Builder::make($routes);
+                if (!is_array($routes)) {
+                    throw new RuntimeException('The error handling routing.');
+                }
+            }
+            $request->getRoute()->replace($routes)->bind();
+
+            /**
+             * middleware.
+             */
+            $middleware = Config::get('middleware', []);
+
+            $this->middleware(
+                $request,
+                $response,
+                $middleware['before'] ?? [],
+                'before'
+            );
+
+            /**
+             * call controllers.
+             */
+            $content = $this->router($request);
+            if ($content instanceof Response) {
+                Container::set('response', $content);
+            } else {
+                $response->setContentType(
+                    is_scalar($content) ?
+                        self::DEFAULT_CONTENT_TYPE :
+                        (string)Config::get('response')
+                );
+                $response->setBody($content);
+            }
+
+            $this->middleware(
+                $request,
+                $response,
+                $middleware['after'] ?? [],
+                'after'
+            );
+
+            /**
+             * errors.
+             */
+            $err = ob_get_contents();
+            if (!empty($err)) {
+                Container::get('logger')->warning($err);
+            }
+        }
+
+        ob_end_clean();
+
+        HttpCodeHandler::make(Container::get('response'))->send();
+        exit(0);
+    }
+
+    private function cors(): array
     {
         $allowHeaders = Config::get('allowHeaders', []);
         $defaultHeaders = [
@@ -61,110 +157,12 @@ class Application implements ApplicationInterface
         ];
     }
 
-    /**
-     * @throws \Dewep\Exception\RuntimeException
-     * @throws \Dewep\Exception\UndefinedFormatException
-     * @throws \Exception
-     */
-    public function bootstrap()
-    {
-        ob_start();
-
-        /**
-         *  Build Request
-         */
-        $request = Request::initialize();
-        Container::set('request', $request);
-
-        /**
-         * fix
-         */
-        Config::exist('domain', $request->getHeader()->getHost());
-        Config::exist('response', $request->getHeader()->getAcceptType());
-
-        /**
-         * Build Response
-         */
-        $response = new Response(new HeaderBag($this->cors()), $request->getCookie());
-        Container::set('response', $response);
-
-        /**
-         *
-         */
-        if ($request->getServer()->isOptions() === false) {
-
-            /**
-             * session
-             */
-            $session = Config::get('session', []);
-
-            $request->setSession(
-                SessionBag::initialize(
-                    $session['_'] ?? null,
-                    (int)($session['lifetime'] ?? 3600),
-                    (string)Config::get('domain', '')
-                )
-            );
-
-            /**
-             * routes
-             */
-            $routes = Config::get('routes', []);
-            if (is_string($routes)) {
-                $routes = Builder::make($routes);
-                if (!is_array($routes)) {
-                    throw new RuntimeException('The error handling routing.');
-                }
-            }
-            $request->getRoute()->replace($routes)->bind();
-
-            /**
-             * middleware
-             */
-            $middleware = Config::get('middleware', []);
-
-            $this->middleware($request, $response, $middleware['before'] ?? [], 'before');
-
-            /**
-             * call controllers
-             */
-            $content = $this->router($request);
-            if ($content instanceof Response) {
-                Container::set('response', $content);
-            } else {
-                $response->setContentType(
-                    is_scalar($content) ?
-                        self::DEFAULT_CONTENT_TYPE :
-                        (string)Config::get('response')
-                );
-                $response->setBody($content);
-            }
-
-            $this->middleware($request, $response, $middleware['after'] ?? [], 'after');
-
-            /**
-             * errors
-             */
-            $err = ob_get_contents();
-            if (!empty($err)) {
-                Container::get('logger')->warning($err);
-            }
-        }
-
-        ob_end_clean();
-
-        HttpCodeHandler::make(Container::get('response'))->send();
-        exit(0);
-    }
-
-    /**
-     * @param \Dewep\Http\Request  $request
-     * @param \Dewep\Http\Response $response
-     * @param array                $middlewares
-     * @param string               $handler
-     */
-    protected function middleware(Request $request, Response $response, array $middlewares, string $handler)
-    {
+    private function middleware(
+        Request $request,
+        Response $response,
+        array $middlewares,
+        string $handler
+    ): void {
         foreach ($middlewares as $name => $params) {
             $class = $params['_'] ?? null;
             unset($params['_']);
@@ -184,12 +182,11 @@ class Application implements ApplicationInterface
     }
 
     /**
-     * @param \Dewep\Http\Request $request
+     * @throws \Dewep\Exception\HttpException
      *
      * @return mixed
-     * @throws \Exception
      */
-    protected function router(Request $request)
+    private function router(Request $request)
     {
         /** @var array $attributes */
         $attributes = $request->getRoute()->getAttributes();

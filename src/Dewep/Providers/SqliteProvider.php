@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Providers;
 
@@ -6,19 +8,9 @@ use Dewep\Config;
 use Dewep\Interfaces\ProviderInterface;
 use Dewep\Sqlite;
 
-/**
- * Class SqliteProvider
- *
- * @package Dewep\Providers
- */
-class SqliteProvider implements ProviderInterface
+final class SqliteProvider implements ProviderInterface
 {
-    /**
-     * @param array $config
-     *
-     * @return \Dewep\Sqlite|mixed
-     */
-    public function handler(array $config)
+    public function handler(array $config): Sqlite
     {
         $filename = sprintf(
             '%s/%s',

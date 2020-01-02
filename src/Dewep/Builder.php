@@ -1,61 +1,49 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep;
 
-/**
- * Class Builder
- *
- * @package Dewep
- */
-class Builder
+final class Builder
 {
-    const DEFAULT_METHOD = 'handler';
+    public const DEFAULT_METHOD = 'handler';
 
-    /**
-     * @param array       $class
-     * @param string|null $handler
-     */
-    public static function makes(array $class, ?string $handler = null)
+    public static function makes(array $class, ?string $handler = null): void
     {
         if (!empty($class)) {
             foreach ($class as $call => $params) {
                 $params = is_array($params) ? $params : [$params];
-                self::make($call, $handler, $params);
+                self::make((string)$call, $handler, $params);
             }
         }
     }
 
     /**
-     * @param string      $class
-     * @param string|null $handler
-     * @param array       $params
-     *
      * @return mixed
      */
     public static function make(string $class, ?string $handler = null, array $params = [])
     {
-        @list($call, $method) = explode('::', $class, 2);
+        [$call, $method] = explode('::', $class, 2);
 
         if (!empty($handler) && is_string($handler)) {
             $method = $handler;
-        } elseif (empty($method) || $method === 'class') {
+        } elseif (empty($method) || 'class' === $method) {
             $method = self::DEFAULT_METHOD;
         }
 
         unset($params['_']);
 
-        return self::call([new $call(), $method], $params);
+        return self::call(new $call(), $method, $params);
     }
 
     /**
-     * @param mixed $function
-     * @param array $arguments
-     *
      * @return mixed
      */
-    public static function call($function, array $arguments = [])
-    {
-        return call_user_func_array($function, $arguments);
+    public static function call(
+        object $object,
+        string $method,
+        array $arguments = []
+    ) {
+        return call_user_func_array([$object, $method], $arguments);
     }
-
 }

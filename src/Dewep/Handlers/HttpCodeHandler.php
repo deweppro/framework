@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Handlers;
 
@@ -6,22 +8,16 @@ use Dewep\Application;
 use Dewep\Config;
 use Dewep\Http\Response;
 
-class HttpCodeHandler
+final class HttpCodeHandler
 {
-    protected static $handlers = [];
+    /** @var array */
+    private static $handlers = [];
 
-    /**
-     * @param int      $code
-     * @param callable $handler
-     */
     public static function setHandler(int $code, callable $handler): void
     {
         self::$handlers[$code] = $handler;
     }
 
-    /**
-     * @param array $data
-     */
     public static function setHandlers(array $data): void
     {
         foreach ($data as $code => $handler) {
@@ -29,11 +25,6 @@ class HttpCodeHandler
         }
     }
 
-    /**
-     * @param \Dewep\Http\Response $response
-     *
-     * @return \Dewep\Http\Response
-     */
     public static function make(Response $response): Response
     {
         if (!isset(self::$handlers[$response->getStatusCode()])) {

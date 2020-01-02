@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep;
 
@@ -6,25 +8,29 @@ use Dewep\Exception\RuntimeException;
 use Dewep\Parsers\Yaml;
 use Dewep\Patterns\Registry;
 
-class Config extends Registry
+final class Config extends Registry
 {
+    public const BASE_PATH_NAME = 'base';
 
-    const BASE_PATH_NAME = 'base';
-    const APP_PATH_NAME = 'app';
-    const RESOURCES_PATH_NAME = 'resources';
-    const DATABASE_PATH_NAME = 'database';
-    const TEMP_PATH_NAME = 'temp';
-    const STORAGE_PATH_NAME = 'storage';
-    const TESTS_PATH_NAME = 'tests';
-    const PUBLIC_PATH_NAME = 'public';
+    public const APP_PATH_NAME = 'app';
+
+    public const RESOURCES_PATH_NAME = 'resources';
+
+    public const DATABASE_PATH_NAME = 'database';
+
+    public const TEMP_PATH_NAME = 'temp';
+
+    public const STORAGE_PATH_NAME = 'storage';
+
+    public const TESTS_PATH_NAME = 'tests';
+
+    public const PUBLIC_PATH_NAME = 'public';
 
     /**
-     * @param string $file
-     *
-     * @throws Exception\FileException
-     * @throws RuntimeException
+     * @throws \Dewep\Exception\FileException
+     * @throws \Dewep\Exception\RuntimeException
      */
-    final public static function setConfigPath(string $file)
+    public static function setConfigPath(string $file): void
     {
         if (
             !file_exists($file) ||
@@ -38,10 +44,7 @@ class Config extends Registry
         self::append(Yaml::read($file, self::tempPath()));
     }
 
-    /**
-     * @param array $config
-     */
-    final public static function append(array $config)
+    public static function append(array $config): void
     {
         self::$__registry[self::__class()] = array_replace_recursive(
             self::$__registry[self::__class()] ?? [],
@@ -49,23 +52,17 @@ class Config extends Registry
         );
     }
 
-    /**
-     * @return string
-     */
-    final public static function tempPath(): string
+    public static function tempPath(): string
     {
         return (string)(self::basePath().'/'.self::TEMP_PATH_NAME);
     }
 
-    /**
-     * @return string
-     */
-    final public static function basePath(): string
+    public static function basePath(): string
     {
         return self::get(self::BASE_PATH_NAME);
     }
 
-    final public static function restoreFolderStructure()
+    public static function restoreFolderStructure(): void
     {
         foreach (self::getPaths() as $name => $path) {
             if (!is_dir($path)) {
@@ -74,10 +71,7 @@ class Config extends Registry
         }
     }
 
-    /**
-     * @return array
-     */
-    final public static function getPaths(): array
+    public static function getPaths(): array
     {
         return [
             self::BASE_PATH_NAME      => self::basePath(),
@@ -91,52 +85,33 @@ class Config extends Registry
         ];
     }
 
-    /**
-     * @return string
-     */
-    final public static function appPath(): string
+    public static function appPath(): string
     {
         return (string)(self::basePath().'/'.self::APP_PATH_NAME);
     }
 
-    /**
-     * @return string
-     */
-    final public static function resourcesPath(): string
+    public static function resourcesPath(): string
     {
         return (string)(self::basePath().'/'.self::RESOURCES_PATH_NAME);
     }
 
-    /**
-     * @return string
-     */
-    final public static function databasePath(): string
+    public static function databasePath(): string
     {
         return (string)(self::basePath().'/'.self::DATABASE_PATH_NAME);
     }
 
-    /**
-     * @return string
-     */
-    final public static function storagePath(): string
+    public static function storagePath(): string
     {
         return (string)(self::basePath().'/'.self::STORAGE_PATH_NAME);
     }
 
-    /**
-     * @return string
-     */
-    final public static function testsPath(): string
+    public static function testsPath(): string
     {
         return (string)(self::basePath().'/'.self::TESTS_PATH_NAME);
     }
 
-    /**
-     * @return string
-     */
-    final public static function publicPath(): string
+    public static function publicPath(): string
     {
         return (string)(self::basePath().'/'.self::PUBLIC_PATH_NAME);
     }
-
 }

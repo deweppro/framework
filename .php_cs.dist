@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+$finder = PhpCsFixer\Finder::create()
+    ->exclude(['vendor'])
+    ->in([__DIR__]);
+
+return PhpCsFixer\Config::create()
+    ->setUsingCache(false)
+    ->setRules(
+        [
+            '@PSR1'                       => true,
+            '@PSR2'                       => true,
+            '@Symfony'                    => true,
+            '@PhpCsFixer'                 => true,
+            'declare_strict_types'        => true,
+            'array_syntax'                => ['syntax' => 'short'],
+            'array_indentation'           => true,
+            'class_definition'            => true,
+            'compact_nullable_typehint'   => true,
+            'explicit_string_variable'    => true,
+            'encoding'                    => true,
+            'no_extra_blank_lines'        => true,
+            'single_blank_line_at_eof'    => true,
+            'cast_spaces'                 => true,
+            'phpdoc_types_order'          => ['null_adjustment' => 'always_last'],
+            'yoda_style'                  => true,
+            'ordered_class_elements'      => true,
+            'blank_line_before_return'    => true,
+            'blank_line_before_statement' => true,
+            'phpdoc_to_comment'           => true,
+            'no_useless_else'             => true,
+            'no_superfluous_elseif'       => false,
+            'phpdoc_summary'              => true,
+            'binary_operator_spaces'      => [
+                'default'   => 'align',
+                'operators' => [
+                    '=>' => 'align_single_space_minimal',
+                ],
+            ],
+            'multiline_whitespace_before_semicolons'      => false,
+            'increment_style'                             => ['style' => 'post'],
+            'php_unit_test_class_requires_covers'         => false,
+            'php_unit_internal_class'                     => false,
+            'fully_qualified_strict_types'                => true,
+            'magic_constant_casing'                       => true,
+            'phpdoc_no_package'                           => true,
+            'phpdoc_types'                                => true,
+            'phpdoc_align'                                => true,
+            'phpdoc_inline_tag'                           => true,
+            'phpdoc_single_line_var_spacing'              => true,
+            'single_blank_line_before_namespace'          => true,
+            'single_line_comment_style'                   => true,
+            'single_line_after_imports'                   => true,
+            'standardize_not_equals'                      => true,
+            'ternary_to_null_coalescing'                  => true,
+            'class_attributes_separation'                 => true,
+            'single_class_element_per_statement'          => true,
+            'normalize_index_brace'                       => true,
+            'single_quote'                                => true,
+            'indentation_type'                            => true,
+            'visibility_required'                         => ['const', 'property', 'method'],
+            'function_typehint_space'                     => true,
+            'no_empty_phpdoc'                             => true,
+            'no_closing_tag'                              => true,
+            'no_multiline_whitespace_around_double_arrow' => true,
+            'no_short_bool_cast'                          => true,
+            'no_spaces_after_function_name'               => true,
+            'no_leading_namespace_whitespace'             => true,
+            'no_unused_imports'                           => true,
+            'object_operator_without_whitespace'          => true,
+        ]
+    )
+    ->setFinder($finder);

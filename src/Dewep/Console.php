@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep;
 
@@ -7,36 +9,20 @@ use Dewep\Console\Output;
 use Dewep\Interfaces\ApplicationInterface;
 use Dewep\Interfaces\ConsoleInterface;
 
-/**
- * Class Console
- *
- * @package Dewep
- */
-class Console implements ApplicationInterface
+final class Console implements ApplicationInterface
 {
-    /**
-     * @var string|null
-     */
-    protected $command = null;
+    /** @var string|null */
+    private $command;
 
-    /**
-     * @var array
-     */
-    protected $commands = [];
+    /** @var array */
+    private $commands = [];
 
-    /**
-     * @var Input
-     */
-    protected $input;
+    /** @var Input */
+    private $input;
 
-    /**
-     * @var Output
-     */
-    protected $output;
+    /** @var Output */
+    private $output;
 
-    /**
-     * Console constructor.
-     */
     public function __construct()
     {
         $this->commands = Config::get('console', []);
@@ -53,10 +39,7 @@ class Console implements ApplicationInterface
         $this->output = new Output();
     }
 
-    /**
-     *
-     */
-    public function bootstrap()
+    public function bootstrap(): void
     {
         if (!isset($this->commands[$this->command])) {
             $this->commandsList();
@@ -84,10 +67,7 @@ class Console implements ApplicationInterface
         exit(0);
     }
 
-    /**
-     *
-     */
-    protected function commandsList()
+    private function commandsList(): void
     {
         $this->output->danger('Commands list:');
         foreach ($this->commands as $name => $handler) {
@@ -95,7 +75,7 @@ class Console implements ApplicationInterface
                 sprintf(
                     "\t%s: %s",
                     $name,
-                    Builder::call([$handler, 'help'], [])
+                    Builder::call(new $handler(), 'help', [])
                 )
             );
         }

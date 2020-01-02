@@ -42,8 +42,9 @@
         "twig/twig": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.5",
-        "phpstan/phpstan": "^0.10"
+        "phpunit/phpunit": "~8.5.1",
+        "phpstan/phpstan": "~0.12.3",
+        "friendsofphp/php-cs-fixer": "~2.16.1"
     },
     "config": {
         "sort-packages": true,
@@ -53,6 +54,7 @@
     },
     "scripts": {
         "lint": [
+            "php vendor/bin/php-cs-fixer fix --config ./.php_cs.dist -v --using-cache=no --allow-risky=yes",
             "php vendor/bin/phpstan analyse -c phpstan.neon -l max src tests"
         ],
         "test": [

@@ -1,6 +1,10 @@
 parameters:
+	checkGenericClassInNonGenericObjectType: false
+	checkMissingIterableValueType: false
 	ignoreErrors:
-		- "#Casting to string something that's already string#"
+		- '#function set_error_handler expects#'
+#		- '#function call_user_func expects#'
+		- '#function call_user_func_array expects#'
 	autoload_directories:
 		- %rootDir%/../../../src
 		- %rootDir%/../../../tests

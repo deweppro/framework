@@ -1,16 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Interfaces;
 
-/**
- * Interface ApplicationInterface
- *
- * @package Dewep\Interfaces
- */
 interface ApplicationInterface
 {
-    /**
-     * @throws \Exception
-     */
-    public function bootstrap();
+    public function bootstrap(): void;
 }

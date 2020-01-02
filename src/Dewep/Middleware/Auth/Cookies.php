@@ -1,7 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Middleware\Auth;
 
+use Dewep\Exception\LogicException;
 use Dewep\Http\Request;
 use Dewep\Http\Response;
 use Dewep\Middleware\BaseClass;
@@ -14,9 +17,9 @@ use Dewep\Middleware\BaseClass;
  *          secret: 1M8j4F0m8M6j4gay8Y3T
  *          name: x-user-token
  */
-class Cookies extends BaseClass
+final class Cookies extends BaseClass
 {
-    const ALGO_DEFAULT = 'gost-crypto';
+    public const ALGO_DEFAULT = 'gost-crypto';
 
     /** @var array */
     private static $payload = [];
@@ -31,8 +34,6 @@ class Cookies extends BaseClass
     private static $changed = false;
 
     /**
-     * @param string $key
-     *
      * @return mixed|null
      */
     public static function getData(string $key)
@@ -41,58 +42,49 @@ class Cookies extends BaseClass
     }
 
     /**
-     * @param string $key
-     * @param mixed  $value
+     * @param mixed $value
      */
-    public static function setData(string $key, $value)
+    public static function setData(string $key, $value): void
     {
         self::$payload[$key] = $value;
         self::$changed = true;
     }
 
-    /**
-     * @return array
-     */
     public static function getAll(): array
     {
         return self::$payload;
     }
 
-    /**
-     *
-     */
-    public static function flush()
+    public static function flush(): void
     {
         self::$payload = [];
         self::$changed = true;
     }
 
-    /**
-     * @param int $len
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public static function generateSecretKey(int $len = 64)
+    public static function generateSecretKey(int $len = 64): ?string
     {
-        return bin2hex(random_bytes($len));
+        try {
+            return bin2hex(random_bytes($len));
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
-     * @param \Dewep\Http\Request  $request
-     * @param \Dewep\Http\Response $response
-     * @param array                $params
-     *
-     * @return bool|mixed
-     * @throws \Exception
+     * @throws \Dewep\Exception\LogicException
      */
-    public function before(Request $request, Response $response, array $params)
-    {
+    public function before(
+        Request $request,
+        Response $response,
+        array $params
+    ): void {
         $this->setParams($params);
 
         $secret = $this->getParam('secret');
         if (empty($secret)) {
-            throw new \Exception('Secret key for JWT authorization not found!');
+            throw new LogicException(
+                'Secret key for JWT authorization not found!'
+            );
         }
 
         $cookie = $request->getCookie()->get(
@@ -101,12 +93,12 @@ class Cookies extends BaseClass
         );
 
         if (empty($cookie)) {
-            return false;
+            return;
         }
 
         $tokenData = explode('.', $cookie);
-        if (count($tokenData) != 3) {
-            return false;
+        if (3 != count($tokenData)) {
+            return;
         }
 
         [$header, $payload, $sign] = $tokenData;
@@ -121,7 +113,7 @@ class Cookies extends BaseClass
         ) {
             self::$payload = [];
 
-            return false;
+            return;
         }
 
         $verify = base64_encode(
@@ -133,44 +125,24 @@ class Cookies extends BaseClass
             )
         );
 
-        if (hash_equals($sign, $verify) === false) {
-            return false;
+        if (false === hash_equals($sign, $verify)) {
+            return;
         }
 
         self::$payload = self::base64JsonDecode($payload);
-
-        return true;
     }
 
     /**
-     * @param string $str
-     *
-     * @return array
+     * @throws \Dewep\Exception\LogicException
      */
-    protected function base64JsonDecode(string $str): array
-    {
-        $data = json_decode((string)base64_decode($str), true);
-        if (!is_array($data)) {
-            return [];
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param \Dewep\Http\Request  $request
-     * @param \Dewep\Http\Response $response
-     * @param array                $params
-     *
-     * @return bool|mixed
-     * @throws \Exception
-     */
-    public function after(Request $request, Response $response, array $params)
-    {
+    public function after(
+        Request $request,
+        Response $response,
+        array $params
+    ): void {
         $this->setParams($params);
 
         if (self::$changed) {
-
             $response->getCookie()->set(
                 $this->getParam('name', 'x-user-token'),
                 $this->buildToken(),
@@ -178,26 +150,22 @@ class Cookies extends BaseClass
                 '/',
                 $this->getParam('domain')
             );
-
-            return true;
-
         }
-
-        return false;
     }
 
     /**
-     * @return string
-     * @throws \Exception
+     * @throws \Dewep\Exception\LogicException
      */
     public function buildToken(): string
     {
         $secret = $this->getParam('secret');
         if (empty($secret)) {
-            throw new \Exception('Secret key for JWT authorization not found!');
+            throw new LogicException(
+                'Secret key for JWT authorization not found!'
+            );
         }
 
-        if ((int)self::$header['exp'] == 0) {
+        if (0 == (int)self::$header['exp']) {
             self::$header['exp'] = time() + (int)$this->getParam('exp', 3600);
         }
 
@@ -216,11 +184,16 @@ class Cookies extends BaseClass
         return sprintf('%s.%s.%s', $header, $payload, $sign);
     }
 
-    /**
-     * @param array $data
-     *
-     * @return string
-     */
+    protected function base64JsonDecode(string $str): array
+    {
+        $data = json_decode((string)base64_decode($str), true);
+        if (!is_array($data)) {
+            return [];
+        }
+
+        return $data;
+    }
+
     protected function base64JsonEncode(array $data): string
     {
         $str = base64_encode((string)json_encode($data));
@@ -230,5 +203,4 @@ class Cookies extends BaseClass
 
         return $str;
     }
-
 }

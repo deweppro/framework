@@ -1,26 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Providers;
 
 use Dewep\Config;
 use Dewep\Interfaces\ProviderInterface;
+use Monolog\Handler\ErrorLogHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-/**
- * Class LoggerProvider
- *
- * @package Dewep\Providers
- */
-class LoggerProvider implements ProviderInterface
+final class LoggerProvider implements ProviderInterface
 {
-    /**
-     * @param array $config
-     *
-     * @return mixed|\Monolog\Logger
-     * @throws \Exception
-     */
-    public function handler(array $config)
+    public function handler(array $config): Logger
     {
         $debug = !empty($config['debug'] ?? false) ? Logger::DEBUG : Logger::INFO;
         $logfile = sprintf(
@@ -31,7 +23,14 @@ class LoggerProvider implements ProviderInterface
 
         $appname = (string)($config['name'] ?? 'app');
         $logger = new Logger($appname);
-        $logger->pushHandler(new StreamHandler($logfile, $debug));
+
+        try {
+            $logger->pushHandler(new StreamHandler($logfile, $debug));
+        } catch (\Exception $e) {
+            $logger->pushHandler(
+                new ErrorLogHandler(ErrorLogHandler::OPERATING_SYSTEM, $debug)
+            );
+        }
 
         return $logger;
     }

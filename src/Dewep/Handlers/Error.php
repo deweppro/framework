@@ -1,23 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Handlers;
 
 use Dewep\Config;
 use Dewep\Container;
 use Dewep\Exception\HttpException;
+use Dewep\Exception\UndefinedFormatException;
 use Dewep\Http\Response;
 
-/**
- * Class Error
- *
- * @package Dewep\Handlers
- */
-class Error
+final class Error
 {
     /**
-     * Loader processing errors
+     * Loader processing errors.
      */
-    public static function bootstrap()
+    public static function bootstrap(): void
     {
         set_error_handler(Error::class.'::error');
         set_exception_handler(Error::class.'::exception');
@@ -31,18 +29,31 @@ class Error
      * @param mixed $errstr
      * @param mixed $errfile
      * @param mixed $errline
-     *
-     * @return bool
-     * @throws \Exception
      */
-    public static function error($errno, $errstr, $errfile, $errline)
+    public static function error($errno, $errstr, $errfile, $errline): void
     {
-        if (0 == error_reporting()) {
-            return false;
+        if (0 < error_reporting()) {
+            $errtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
+            self::build($errno, $errstr, $errfile, $errline, $errtrace);
         }
-        $errtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 20);
+    }
 
-        self::build($errno, $errstr, $errfile, $errline, $errtrace);
+    public static function exception(\Throwable $e): void
+    {
+        $code = 500;
+
+        if ($e instanceof HttpException) {
+            $code = $e->getCode();
+        }
+
+        self::build(
+            $e->getCode(),
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTrace(),
+            $code
+        );
     }
 
     /**
@@ -50,13 +61,15 @@ class Error
      * @param mixed $str
      * @param mixed $file
      * @param mixed $line
-     * @param array $trace
-     * @param int   $httpCode
-     *
-     * @throws \Exception
      */
-    private static function build($no, $str, $file, $line, $trace = [], int $httpCode = 500)
-    {
+    private static function build(
+        $no,
+        $str,
+        $file,
+        $line,
+        array $trace = [],
+        int $httpCode = 500
+    ): void {
         $debug = Config::get('debug', false);
 
         $response = [
@@ -77,36 +90,17 @@ class Error
             $response['errorFile'] = $file.':'.$line;
         }
 
-        HttpCodeHandler::make(
-            Response::initialize()
-                ->setBody($response)
-                ->setContentType((string)Config::get('response'))
-                ->setStatusCode($httpCode)
-        )->send();
-        exit(0);
-    }
-
-    /**
-     * @param \Throwable $e
-     *
-     * @throws \Exception
-     */
-    public static function exception(\Throwable $e)
-    {
-        $code = 500;
-
-        if ($e instanceof HttpException) {
-            $code = $e->getCode();
+        try {
+            HttpCodeHandler::make(
+                Response::initialize()
+                    ->setBody($response)
+                    ->setContentType((string)Config::get('response'))
+                    ->setStatusCode($httpCode)
+            )->send();
+        } catch (UndefinedFormatException $e) {
+            echo $str;
         }
 
-        self::build(
-            $e->getCode(),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTrace(),
-            $code
-        );
+        exit(0);
     }
-
 }

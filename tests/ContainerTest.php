@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Dewep\Tests;
 
 use Dewep\Container;
 use PHPUnit\Framework\TestCase;
 
-class ContainerTest extends TestCase
+final class ContainerTest extends TestCase
 {
-    public function testCheckContainer()
+    public function testCheckContainer(): void
     {
         Container::reset();
 
@@ -23,5 +25,4 @@ class ContainerTest extends TestCase
         Container::reset();
         self::assertFalse(Container::has('test'));
     }
-
 }

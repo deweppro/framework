@@ -1,20 +1,15 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Providers\Predis;
 
 /**
- * Class GetJsonCommand
- *
  * @example getjson(key)
- *
- * @package Providers
  */
-class GetJsonCommand extends \Predis\Command\Command
+final class GetJsonCommand extends \Predis\Command\Command
 {
-    /**
-     * @return string
-     */
-    public function getId()
+    public function getId(): string
     {
         return 'GET';
     }

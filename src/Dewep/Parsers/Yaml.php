@@ -1,23 +1,16 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Dewep\Parsers;
 
 use Dewep\Exception\FileException;
 use Symfony\Component\Yaml\Yaml as Y;
 
-/**
- * Class Yaml
- *
- * @package Dewep\Parsers
- */
-class Yaml
+final class Yaml
 {
     /**
-     * @param string      $path
-     * @param string|null $tempDir
-     *
-     * @return array
-     * @throws FileException
+     * @throws \Dewep\Exception\FileException
      */
     public static function read(string $path, string $tempDir = null): array
     {
@@ -47,15 +40,10 @@ class Yaml
         return $yaml;
     }
 
-    /**
-     * @param string $path
-     * @param string $tempDir
-     *
-     * @return string
-     */
-    protected static function getTempFileName(string $path, string $tempDir): string
-    {
+    private static function getTempFileName(
+        string $path,
+        string $tempDir
+    ): string {
         return $tempDir.'/'.hash('md5', $path.':'.filectime($path)).'.yml.php';
     }
-
 }
