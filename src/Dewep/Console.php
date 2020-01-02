@@ -35,7 +35,7 @@ final class Console implements ApplicationInterface
             }
         }
 
-        $this->input = new Input();
+        $this->input  = new Input();
         $this->output = new Output();
     }
 

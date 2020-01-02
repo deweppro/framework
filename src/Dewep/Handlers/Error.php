@@ -94,7 +94,7 @@ final class Error
             HttpCodeHandler::make(
                 Response::initialize()
                     ->setBody($response)
-                    ->setContentType((string)Config::get('response'))
+                    ->setContentType((string) Config::get('response'))
                     ->setStatusCode($httpCode)
             )->send();
         } catch (UndefinedFormatException $e) {

@@ -12,11 +12,11 @@ final class MysqlProvider implements ProviderInterface
     public function handler(array $config): Mysql
     {
         return new Mysql(
-            (string)($config['host'] ?? 'localhost'),
-            (int)($config['port'] ?? 3306),
-            (string)($config['dbname'] ?? 'default'),
-            (string)($config['login'] ?? ''),
-            (string)($config['password'] ?? '')
+            (string) ($config['host'] ?? 'localhost'),
+            (int) ($config['port'] ?? 3306),
+            (string) ($config['dbname'] ?? 'default'),
+            (string) ($config['login'] ?? ''),
+            (string) ($config['password'] ?? '')
         );
     }
 }

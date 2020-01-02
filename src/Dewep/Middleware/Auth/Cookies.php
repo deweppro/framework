@@ -47,7 +47,7 @@ final class Cookies extends BaseClass
     public static function setData(string $key, $value): void
     {
         self::$payload[$key] = $value;
-        self::$changed = true;
+        self::$changed       = true;
     }
 
     public static function getAll(): array
@@ -109,7 +109,7 @@ final class Cookies extends BaseClass
                 'alg',
                 self::ALGO_DEFAULT
             ) ||
-            (int)($headerData['exp'] ?? 0) < time()
+            (int) ($headerData['exp'] ?? 0) < time()
         ) {
             self::$payload = [];
 
@@ -165,11 +165,11 @@ final class Cookies extends BaseClass
             );
         }
 
-        if (0 == (int)self::$header['exp']) {
-            self::$header['exp'] = time() + (int)$this->getParam('exp', 3600);
+        if (0 == (int) self::$header['exp']) {
+            self::$header['exp'] = time() + (int) $this->getParam('exp', 3600);
         }
 
-        $header = $this->base64JsonEncode(self::$header);
+        $header  = $this->base64JsonEncode(self::$header);
         $payload = $this->base64JsonEncode(self::$payload);
 
         $sign = base64_encode(
@@ -186,7 +186,7 @@ final class Cookies extends BaseClass
 
     protected function base64JsonDecode(string $str): array
     {
-        $data = json_decode((string)base64_decode($str), true);
+        $data = json_decode((string) base64_decode($str), true);
         if (!is_array($data)) {
             return [];
         }
@@ -196,7 +196,7 @@ final class Cookies extends BaseClass
 
     protected function base64JsonEncode(array $data): string
     {
-        $str = base64_encode((string)json_encode($data));
+        $str = base64_encode((string) json_encode($data));
         if (!is_string($str)) {
             return '';
         }

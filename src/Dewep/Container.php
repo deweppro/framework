@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Dewep;
 
-use Dewep\Interfaces\ProviderInterface;
 use Dewep\Patterns\Registry;
 
 final class Container extends Registry
@@ -42,14 +41,17 @@ final class Container extends Registry
     public static function all(): array
     {
         $exist = self::$__registry[self::__class()] ?? [];
-        $can = Config::get('providers', []);
+        $can   = Config::get('providers', []);
 
         $result = array_replace($can, $exist);
 
         return array_keys($result);
     }
 
-    protected static function autoload(string $key): ?ProviderInterface
+    /**
+     * @return mixed|null
+     */
+    protected static function autoload(string $key)
     {
         $providers = Config::get('providers', []);
 

@@ -14,15 +14,15 @@ final class LoggerProvider implements ProviderInterface
 {
     public function handler(array $config): Logger
     {
-        $debug = !empty($config['debug'] ?? false) ? Logger::DEBUG : Logger::INFO;
+        $debug   = !empty($config['debug'] ?? false) ? Logger::DEBUG : Logger::INFO;
         $logfile = sprintf(
             '%s/%s',
             Config::tempPath(),
             $config['filename'] ?? 'app.log'
         );
 
-        $appname = (string)($config['name'] ?? 'app');
-        $logger = new Logger($appname);
+        $appname = (string) ($config['name'] ?? 'app');
+        $logger  = new Logger($appname);
 
         try {
             $logger->pushHandler(new StreamHandler($logfile, $debug));
