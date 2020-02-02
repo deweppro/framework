@@ -54,11 +54,17 @@ final class Application implements ApplicationInterface
 
         if (false === $request->getServer()->isOptions()) {
 
+            $response->setContentType(
+                (string)Config::get(
+                    'response',
+                    self::DEFAULT_CONTENT_TYPE
+                )
+            );
+
             /**
-             * session.
+             * Session
              */
             $session = Config::get('session', []);
-
             $request->setSession(
                 SessionBag::initialize(
                     $session['_'] ?? null,
@@ -67,54 +73,70 @@ final class Application implements ApplicationInterface
                 )
             );
 
-            /**
-             * routes.
-             */
             $routes = Config::get('routes', []);
-            if (is_string($routes)) {
-                $routes = Builder::make($routes);
-                if (!is_array($routes)) {
-                    throw new RuntimeException('The error handling routing.');
-                }
-            }
-            $request->getRoute()->replace($routes)->bind();
-
-            /**
-             * middleware.
-             */
             $middleware = Config::get('middleware', []);
 
-            $this->middleware(
-                $request,
-                $response,
-                $middleware['before'] ?? [],
-                'before'
-            );
-
-            /**
-             * call controllers.
-             */
-            $content = $this->router($request);
-            if ($content instanceof Response) {
-                Container::set('response', $content);
-            } else {
-                $response->setContentType(
-                    is_scalar($content) ?
-                        self::DEFAULT_CONTENT_TYPE :
-                        (string)Config::get('response')
+            try {
+                /**
+                 * Middleware before.
+                 */
+                $this->middleware(
+                    $request,
+                    $response,
+                    $middleware['before'] ?? [],
+                    'before'
                 );
-                $response->setBody($content);
+
+                /**
+                 * Routes
+                 */
+                if (is_string($routes)) {
+                    $routes = Builder::make($routes);
+                    if (!is_array($routes)) {
+                        throw new RuntimeException(
+                            'The error handling routing.'
+                        );
+                    }
+                }
+                $request->getRoute()->replace($routes)->bind();
+
+                /**
+                 * Call controllers
+                 */
+                $content = $this->router($request);
+                if ($content instanceof Response) {
+                    Container::set('response', $content);
+                } else {
+                    $response->setBody($content);
+                }
+
+            } catch (\Throwable $throwable) {
+                $response
+                    ->setBody($throwable->getMessage())
+                    ->setStatusCode((int)$throwable->getCode())
+                ;
             }
 
-            $this->middleware(
-                $request,
-                $response,
-                $middleware['after'] ?? [],
-                'after'
-            );
+            /**
+             * Middleware after.
+             */
+            try {
+                $this->middleware(
+                    $request,
+                    $response,
+                    $middleware['after'] ?? [],
+                    'after'
+                );
+            }catch (\Throwable $throwable){
+                $response
+                    ->setBody($throwable->getMessage())
+                    ->setStatusCode((int)$throwable->getCode())
+                ;
+            }
+
 
             /**
-             * errors.
+             * Errors.
              */
             $err = ob_get_contents();
             if (!empty($err)) {
@@ -130,7 +152,7 @@ final class Application implements ApplicationInterface
 
     private function cors(): array
     {
-        $allowHeaders   = Config::get('allowHeaders', []);
+        $allowHeaders = Config::get('allowHeaders', []);
         $defaultHeaders = [
             HeaderTypeBag::CONTENT_TYPE,
             HeaderTypeBag::ACCEPT_TYPE,
@@ -152,8 +174,8 @@ final class Application implements ApplicationInterface
                     )
                 )
             ),
-            'Cache-Control' => 'no-cache',
-            'Pragma'        => 'no-cache',
+            'Cache-Control'                    => 'no-cache',
+            'Pragma'                           => 'no-cache',
         ];
     }
 
